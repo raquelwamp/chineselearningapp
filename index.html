@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="汉字">
+<meta name="theme-color" content="#FF6B35">
+<title>汉字 · Aprende Chino</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:#FF6B35; --orange2:#FF8C5A; --orange-light:#FFF0EB;
+  --teal:#00BFA5; --teal-light:#E0F7F5;
+  --navy:#1A1A2E; --navy2:#2D2D44;
+  --cream:#FFF8F5; --cream2:#FFF3EE;
+  --ink:#2C2C3E; --ink2:#5C5C70; --ink3:#9B9BAD;
+  --white:#FFFFFF;
+  --border:#EDE8E3;
+  --green:#38C172; --green-light:#EDFAF3;
+  --red:#E53E3E; --red-light:#FFF5F5;
+  --gold:#F6C90E; --gold-light:#FFFBE6;
+  --r:16px; --r-sm:10px; --r-lg:24px; --r-xl:32px;
+  --shadow:0 4px 20px rgba(26,26,46,.08);
+  --shadow-lg:0 8px 40px rgba(26,26,46,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.cn{font-family:'Noto Sans SC',sans-serif}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 0;border:none;background:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.03em;text-transform:uppercase;transition:color .15s}
+.bnav-btn .bicon{font-size:22px;line-height:1;transition:transform .15s}
+.bnav-btn.active{color:var(--orange)}
+.bnav-btn.active .bicon{transform:scale(1.1)}
+
+/* ── SCREENS ── */
+.screen{display:none;flex:1;flex-direction:column;padding-bottom:72px;overflow-y:auto}
+.screen.active{display:flex}
+#game-screen{padding-bottom:0}
+
+/* ── HOME ── */
+.home-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);padding:28px 20px 24px;position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:var(--orange);opacity:.12;border-radius:50%}
+.home-hero::after{content:'';position:absolute;bottom:-30px;left:20px;width:100px;height:100px;background:var(--teal);opacity:.1;border-radius:50%}
+.hero-greeting{font-size:13px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.hero-title{font-size:26px;font-weight:800;color:var(--white);margin-bottom:2px}
+.hero-title span{color:var(--orange2)}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:16px}
+.hero-stats{display:flex;gap:10px}
+.hstat{background:rgba(255,255,255,.1);border-radius:var(--r-sm);padding:8px 14px;text-align:center;backdrop-filter:blur(4px)}
+.hstat-num{font-size:18px;font-weight:800;color:var(--white)}
+.hstat-lbl{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+
+/* ── FILTER BAR ── */
+.filter-section{padding:16px 20px 0;background:var(--white);border-bottom:1px solid var(--border)}
+.filter-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.pill{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink2);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.pill:hover{border-color:var(--orange);color:var(--orange)}
+.pill.on{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.pill.on-teal{background:var(--teal);border-color:var(--teal);color:var(--white)}
+.filter-label{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+
+/* ── GAME CARDS ── */
+.section-pad{padding:20px}
+.section-title{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
+.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gcard{background:var(--white);border-radius:var(--r-lg);padding:18px 16px;cursor:pointer;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s;border:none;text-align:left;position:relative;overflow:hidden}
+.gcard::after{content:'';position:absolute;inset:0;border-radius:inherit;opacity:0;background:currentColor;transition:opacity .15s}
+.gcard:active{transform:scale(.97)}
+.gcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.gcard-icon{font-size:32px;margin-bottom:10px;display:block}
+.gcard-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:3px}
+.gcard-desc{font-size:11px;color:var(--ink3);line-height:1.4}
+.gcard-stripe{position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.gcard-count{position:absolute;top:12px;right:12px;font-size:10px;font-weight:800;color:var(--ink3);background:var(--cream);border-radius:10px;padding:2px 7px}
+
+/* ── VOCAB SCREEN ── */
+.screen-header{background:var(--white);padding:18px 20px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.screen-header h2{font-size:20px;font-weight:800;margin-bottom:10px}
+.search-row{display:flex;gap:8px}
+.search-inp{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .15s}
+.search-inp:focus{border-color:var(--orange);background:var(--white)}
+.btn{padding:9px 16px;border-radius:var(--r-sm);border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--orange);color:var(--white)}
+.btn-primary:hover{background:var(--orange2)}
+.btn-outline{background:var(--white);color:var(--ink2);border:1.5px solid var(--border)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-ghost{background:none;border:none;color:var(--ink3);padding:6px 8px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px}
+
+/* vocab table */
+.vtable-wrap{background:var(--white);margin:8px 10px;border-radius:var(--r);box-shadow:var(--shadow);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.vtable{width:100%;border-collapse:collapse;min-width:320px}
+.vtable th{background:var(--cream);padding:9px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:left;border-bottom:1px solid var(--border)}
+.vtable td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.vtable tr:last-child td{border-bottom:none}
+.vtable tr:hover td{background:var(--cream2)}
+.cn-cell{font-family:'Noto Sans SC',sans-serif;font-size:19px;font-weight:500}
+.py-cell{font-size:12px;color:var(--orange);font-weight:600}
+.hsk-tag{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:800}
+.hsk1{background:#FFF0EB;color:#D4481A}.hsk2{background:#FFF8E6;color:#B07800}.hsk3{background:#E8F4FD;color:#1565C0}
+.cat-tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;background:var(--cream);color:var(--ink2)}
+.act-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;font-size:14px;transition:background .15s}
+.act-btn:hover{background:var(--cream)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px;font-size:12px;font-weight:600;color:var(--ink3)}
+.pagination button{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:6px 12px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink2);transition:all .15s}
+.pagination button:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── GRAMMAR SCREEN ── */
+.grammar-card{background:var(--white);border-radius:var(--r);margin:0 16px 12px;box-shadow:var(--shadow);overflow:hidden}
+.gc-header{padding:16px 18px 12px;border-left:4px solid var(--orange)}
+.gc-pattern{font-family:'Noto Sans SC',sans-serif;font-size:20px;font-weight:700;color:var(--orange);margin-bottom:4px}
+.gc-name{font-size:15px;font-weight:800;margin-bottom:4px}
+.gc-desc{font-size:13px;color:var(--ink2);line-height:1.6}
+.gc-examples{background:var(--cream);padding:12px 18px;display:flex;flex-direction:column;gap:8px}
+.gc-ex{background:var(--white);border-radius:var(--r-sm);padding:10px 14px}
+.gc-cn{font-family:'Noto Sans SC',sans-serif;font-size:16px}
+.gc-py{font-size:12px;color:var(--orange);font-weight:600;margin-top:2px}
+.gc-es{font-size:12px;color:var(--ink3);margin-top:1px}
+.grammar-practice-btn{display:block;margin:0 16px 20px;background:var(--orange);color:var(--white);border:none;border-radius:var(--r);padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-align:center;width:calc(100% - 32px)}
+
+/* ── GAME SCREEN ── */
+#game-screen{background:var(--cream);min-height:100vh}
+.game-topbar{background:var(--white);padding:14px 16px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.back-btn{background:var(--cream);border:none;border-radius:var(--r-sm);padding:8px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .15s}
+.back-btn:hover{background:var(--border)}
+.game-topbar-title{flex:1;font-size:16px;font-weight:800}
+.game-topbar-sub{font-size:11px;color:var(--ink3);font-weight:600}
+.game-body{padding:16px;max-width:480px;margin:0 auto;width:100%;padding-bottom:32px}
+
+/* progress */
+.progress-track{height:6px;background:var(--border);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange2));border-radius:3px;transition:width .4s ease}
+
+/* scores */
+.scores{display:flex;gap:10px;margin-bottom:16px}
+.score-box{flex:1;background:var(--white);border-radius:var(--r);padding:10px;text-align:center;box-shadow:var(--shadow)}
+.score-n{font-size:22px;font-weight:800;color:var(--orange)}
+.score-l{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+
+/* mode chips in game */
+.mode-chips{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.mode-chips::-webkit-scrollbar{display:none}
+
+/* ── FLASHCARD ── */
+.fc-perspective{perspective:1000px;cursor:pointer;margin-bottom:16px}
+.fc-card{width:100%;aspect-ratio:5/3;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.fc-card.flipped{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r-xl);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px}
+.fc-front{background:var(--white);box-shadow:var(--shadow-lg)}
+.fc-back{background:linear-gradient(135deg,var(--orange),var(--orange2));transform:rotateY(180deg);box-shadow:var(--shadow-lg)}
+.fc-emoji{font-size:36px;margin-bottom:4px}
+.fc-char{font-family:'Noto Sans SC',sans-serif;font-size:56px;font-weight:700;color:var(--ink);line-height:1}
+.fc-py{font-size:18px;font-weight:700;color:var(--orange)}
+.fc-hint{font-size:11px;color:var(--ink3);font-weight:600;margin-top:4px}
+.fc-back .fc-char{color:rgba(255,255,255,.9);font-size:36px}
+.fc-back .fc-py{color:rgba(255,255,255,.7);font-size:15px}
+.fc-meaning{font-size:24px;font-weight:800;color:var(--white)}
+.fc-btns{display:flex;gap:10px}
+.fc-btn{flex:1;padding:14px;border-radius:var(--r);border:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s}
+.fc-no{background:var(--red-light);color:var(--red)}
+.fc-yes{background:var(--green-light);color:var(--green)}
+.fc-no:hover{background:var(--red);color:var(--white)}
+.fc-yes:hover{background:var(--green);color:var(--white)}
+
+/* ── MULTIPLE CHOICE ── */
+.mc-qbox{background:var(--white);border-radius:var(--r-xl);padding:36px 24px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-lg)}
+.mc-emoji{font-size:42px;margin-bottom:8px}
+.mc-char{font-family:'Noto Sans SC',sans-serif;font-size:64px;font-weight:700;line-height:1;color:var(--ink)}
+.mc-py{font-size:18px;font-weight:700;color:var(--orange);margin-top:6px}
+.mc-instr{font-size:12px;color:var(--ink3);font-weight:600;margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mc-opt{padding:16px 10px;border-radius:var(--r);border:2px solid var(--border);background:var(--white);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:var(--shadow)}
+.mc-opt:hover{border-color:var(--orange)}
+.mc-opt.ok{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.mc-opt.no{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.mc-opt-emoji{font-size:22px}
+.mc-opt-txt{font-size:13px}
+
+/* ── MATCHING ── */
+.match-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.match-item{padding:12px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--white);cursor:pointer;text-align:center;font-size:13px;font-weight:700;min-height:52px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:all .15s}
+.match-item.cn{font-family:'Noto Sans SC',sans-serif;font-size:20px}
+.match-item.py{font-size:12px;color:var(--orange);font-weight:700}
+.match-item.sel{border-color:var(--gold);background:var(--gold-light)}
+.match-item.done{border-color:var(--green);background:var(--green-light);opacity:.65;pointer-events:none}
+.match-item.bad{border-color:var(--red);background:var(--red-light);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ── MEMORY ── */
+.mem-grid{display:grid;gap:8px}
+.mem-card{aspect-ratio:1;cursor:pointer}
+.mem-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .4s}
+.mem-card.flip .mem-inner,.mem-card.done .mem-inner{transform:rotateY(180deg)}
+.mem-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r);display:flex;align-items:center;justify-content:center;border:2px solid var(--border);padding:6px;text-align:center}
+.mem-b{background:var(--navy);border-color:var(--navy)}
+.mem-b-icon{font-family:'Noto Sans SC',sans-serif;font-size:20px;color:rgba(255,255,255,.2);font-weight:700}
+.mem-f{background:var(--white);transform:rotateY(180deg);font-family:'Noto Sans SC',sans-serif;font-size:16px;font-weight:600}
+.mem-f.es{font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--ink2)}
+.mem-card.done .mem-f{background:var(--green-light);border-color:var(--green)}
+
+/* ── WRITING ── */
+.wr-qbox{background:var(--white);border-radius:var(--r-xl);padding:28px 20px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-lg)}
+.wr-qlabel{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:10px}
+.wr-main{font-size:28px;font-weight:800;margin-bottom:6px}
+.wr-py{font-size:17px;font-weight:700;color:var(--orange);margin-top:4px}
+.wr-inputrow{display:flex;gap:10px;margin-bottom:10px}
+.wr-inp{flex:1;padding:14px 16px;border:2px solid var(--border);border-radius:var(--r);font-family:'Noto Sans SC',sans-serif;font-size:24px;color:var(--ink);background:var(--white);outline:none;text-align:center;transition:border-color .15s;letter-spacing:2px}
+.wr-inp:focus{border-color:var(--orange)}
+.wr-inp.ok{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.wr-inp.no{border-color:var(--red);background:var(--red-light);color:var(--red);animation:shake .3s}
+.wr-feedback{border-radius:var(--r);padding:12px 16px;font-size:13px;font-weight:700;margin-top:10px;display:none}
+.wr-feedback.show{display:block}
+.wr-fb-ok{background:var(--green-light);color:var(--green)}
+.wr-fb-no{background:var(--red-light);color:var(--red)}
+.pista-box{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;margin-top:8px;display:none}
+.pista-char{font-family:'Noto Sans SC',sans-serif;font-size:48px;color:var(--ink3);opacity:.3}
+.pista-py{font-size:13px;font-weight:600;color:var(--orange);opacity:.5;margin-top:4px}
+
+/* ── GRAMMAR QUIZ ── */
+.gr-qbox{background:var(--white);border-radius:var(--r-xl);padding:28px 20px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-lg)}
+.gr-sentence{font-family:'Noto Sans SC',sans-serif;font-size:26px;font-weight:600;line-height:1.5;margin-bottom:6px}
+.gr-hint{font-size:12px;color:var(--ink3);font-weight:600}
+.gr-opts{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:12px}
+.gr-opt{padding:11px 20px;border-radius:24px;border:2px solid var(--border);background:var(--white);font-family:'Noto Sans SC',sans-serif;font-size:17px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
+.gr-opt:hover{border-color:var(--orange)}
+.gr-opt.ok{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.gr-opt.no{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.gr-explain{background:var(--cream);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.6;color:var(--ink2);display:none;margin-bottom:12px}
+.gr-explain.show{display:block}
+.gr-more-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.gr-chip{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+
+/* ── CLASSIFIER GAME ── */
+.cl-qbox{background:var(--white);border-radius:var(--r-xl);padding:28px 20px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-lg)}
+.cl-qlabel{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:10px}
+.cl-sentence{font-family:'Noto Sans SC',sans-serif;font-size:28px;font-weight:600;line-height:1.5;margin-bottom:4px}
+.cl-py{font-size:14px;color:var(--orange);font-weight:600;margin-bottom:2px}
+.cl-es{font-size:13px;color:var(--ink3)}
+.cl-opts{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:12px}
+.cl-opt{padding:12px 16px;border-radius:var(--r);border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;box-shadow:var(--shadow);transition:all .15s}
+.cl-opt:hover{border-color:var(--orange)}
+.cl-opt.ok{background:var(--green-light);border-color:var(--green)}
+.cl-opt.no{background:var(--red-light);border-color:var(--red)}
+.cl-opt-char{font-family:'Noto Sans SC',sans-serif;font-size:26px;font-weight:700;color:var(--ink)}
+.cl-opt-py{font-size:11px;color:var(--orange);font-weight:600}
+.cl-opt-desc{font-size:10px;color:var(--ink3);font-weight:600;text-align:center;max-width:80px;line-height:1.3}
+.cl-explain{background:var(--cream);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.6;color:var(--ink2);display:none;margin-bottom:12px}
+.cl-explain.show{display:block}
+
+/* classifier reference */
+.clf-card{background:var(--white);border-radius:var(--r);margin:0 16px 12px;box-shadow:var(--shadow);overflow:hidden}
+.clf-header{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--border)}
+.clf-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif;font-size:26px;font-weight:700;flex-shrink:0}
+.clf-char{font-size:16px;font-weight:800}
+.clf-py{font-size:12px;color:var(--orange);font-weight:600}
+.clf-rule{font-size:12px;color:var(--ink2);margin-top:2px;line-height:1.5}
+.clf-nouns{padding:12px 18px;display:flex;flex-wrap:wrap;gap:8px}
+.clf-noun{display:inline-flex;align-items:center;gap:5px;border-radius:12px;padding:7px 12px;font-size:12px}
+.clf-noun-emoji{font-size:18px}
+.clf-noun-cn{font-family:'Noto Sans SC',sans-serif;font-size:15px;font-weight:600}
+.clf-noun-es{color:var(--ink3);font-size:11px}
+
+/* build mode */
+.build-box{background:var(--white);border-radius:var(--r-xl);padding:22px 18px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-lg)}
+.build-target{font-size:17px;font-weight:700;margin-bottom:14px;color:var(--ink)}
+.drop-zone{min-height:56px;border:2px dashed var(--border);border-radius:var(--r);padding:10px;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center;margin-bottom:14px;transition:border-color .2s}
+.drop-zone.has-items{border-style:solid;border-color:var(--orange)}
+.drop-hint{font-size:12px;color:var(--ink3);font-weight:600}
+.piece-zone{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.piece{background:var(--cream);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 14px;font-family:'Noto Sans SC',sans-serif;font-size:17px;cursor:pointer;transition:all .15s;font-weight:500}
+.piece:hover{border-color:var(--orange);background:var(--orange-light)}
+.piece.used{opacity:.3;pointer-events:none}
+.drop-piece{background:var(--white);border:1.5px solid var(--orange);border-radius:var(--r-sm);padding:9px 14px;font-family:'Noto Sans SC',sans-serif;font-size:17px;cursor:pointer;transition:background .15s;font-weight:500}
+.drop-piece:hover{background:var(--orange-light)}
+
+/* ── RESULTS ── */
+.results-box{background:var(--white);border-radius:var(--r-xl);padding:40px 24px;text-align:center;box-shadow:var(--shadow-lg);margin-top:10px}
+.results-emoji{font-size:56px;margin-bottom:10px}
+.results-title{font-size:24px;font-weight:800;margin-bottom:4px}
+.results-sub{font-size:14px;color:var(--ink3);margin-bottom:24px}
+.results-stats{display:flex;gap:16px;justify-content:center;margin-bottom:28px}
+.res-stat-n{font-size:36px;font-weight:800;color:var(--orange)}
+.res-stat-l{font-size:12px;color:var(--ink3);font-weight:700}
+.results-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(26,26,46,.5);z-index:300;align-items:flex-end;justify-content:center;padding:0}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:24px 20px 32px;width:100%;max-width:480px}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);display:block;margin-bottom:5px}
+.form-inp,.form-sel{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .15s}
+.form-inp:focus,.form-sel:focus{border-color:var(--orange);background:var(--white)}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+
+/* ── NEXT BTN ── */
+.next-btn{display:none;width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;transition:background .15s}
+.next-btn.show{display:block}
+.next-btn:hover{background:var(--navy2)}
+
+/* ── UTILITY ── */
+.hidden{display:none!important}
+.mb8{margin-bottom:8px}
+.mb14{margin-bottom:14px}
+.mt10{margin-top:10px}
+.center{text-align:center}
+
+/* ── RESPONSIVE ── */
+@media(max-width:390px){
+  .games-grid{grid-template-columns:1fr 1fr;gap:9px}
+  .gcard{padding:14px 12px}
+  .gcard-icon{font-size:26px}
+  .gcard-title{font-size:13px}
+  .gcard-desc{font-size:10px}
+  .mc-char{font-size:50px}
+  .fc-char{font-size:44px}
+  .match-cols{grid-template-columns:1fr 1fr}
+  .scores{gap:6px}
+  .score-n{font-size:18px}
+}
+
+  @media(max-width:420px){
+    .vtable th:nth-child(2),.vtable td:nth-child(2){display:none}
+    .vtable th:nth-child(4),.vtable td:nth-child(4){display:none}
+    .vtable th,.vtable td{padding:7px 7px;font-size:12px}
+    .cn-cell{font-size:15px}
+    .py-cell{font-size:11px}
+    .vtable-wrap{margin:6px 8px;overflow-x:auto}
+    .screen-header h2{font-size:17px}
+    .search-row{flex-wrap:wrap}
+    .search-inp{min-width:0;font-size:13px}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HOME SCREEN -->
+<div id="s-home" class="screen active">
+  <div class="home-hero">
+    <div class="hero-greeting">¡Hola! 你好</div>
+    <div class="hero-title">Aprende <span>中文</span></div>
+    <div class="hero-sub">Vocabulario HSK 1 · 2 · 3</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="stat-words">0</div><div class="hstat-lbl">Palabras</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-hsk1">0</div><div class="hstat-lbl">HSK 1</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-hsk2">0</div><div class="hstat-lbl">HSK 2</div></div>
+    </div>
+  </div>
+  <div class="filter-section">
+    <div class="filter-label">Nivel</div>
+    <div class="filter-row" id="lvl-filter"></div>
+    <div class="filter-label" style="margin-top:10px">Categoría</div>
+    <div class="filter-row" id="cat-filter"></div>
+  </div>
+  <div class="section-pad">
+    <div class="section-title">Juegos</div>
+    <div class="games-grid" id="games-grid"></div>
+  </div>
+</div>
+
+<!-- VOCAB SCREEN -->
+<div id="s-vocab" class="screen">
+  <div class="screen-header">
+    <h2>📖 Vocabulario</h2>
+    <div class="search-row">
+      <input type="text" class="search-inp" id="search-inp" placeholder="Buscar..." oninput="filterVocab()">
+      <button class="btn btn-primary" onclick="openAddModal()">+ Añadir</button>
+    </div>
+  </div>
+  <div style="padding:10px 16px 4px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none" id="vocab-lvl-filter"></div>
+  <div class="vtable-wrap">
+    <table class="vtable">
+      <thead><tr><th>汉字</th><th>Pinyin</th><th>Significado</th><th>Cat.</th><th>HSK</th><th></th></tr></thead>
+      <tbody id="vtbody"></tbody>
+    </table>
+  </div>
+  <div class="pagination" id="vpag"></div>
+</div>
+
+<!-- GRAMMAR SCREEN -->
+<div id="s-grammar" class="screen">
+  <div class="screen-header">
+    <h2>📝 Gramática HSK 1-2</h2>
+    <button class="grammar-practice-btn" onclick="startGame('grammar')" style="margin:0 0 4px;width:100%">Practicar quiz →</button>
+  </div>
+  <div style="padding:14px 0 0" id="gr-ref-cards"></div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="s-game" class="screen" style="display:none">
+  <div class="game-topbar">
+    <button class="back-btn" onclick="exitGame()">← Salir</button>
+    <div style="flex:1">
+      <div class="game-topbar-title" id="g-title"></div>
+      <div class="game-topbar-sub" id="g-sub"></div>
+    </div>
+  </div>
+  <div class="game-body" id="game-body"></div>
+</div>
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bnav-btn active" onclick="showScreen('home')" id="nav-home">
+    <span class="bicon">🏠</span><span>Inicio</span>
+  </button>
+  <button class="bnav-btn" onclick="showScreen('vocab')" id="nav-vocab">
+    <span class="bicon">📖</span><span>Vocab</span>
+  </button>
+  <button class="bnav-btn" onclick="showScreen('grammar')" id="nav-grammar">
+    <span class="bicon">📝</span><span>Gramática</span>
+  </button>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-h">Añadir palabra</h3>
+    <div class="form-group"><label class="form-label">Carácter chino</label><input class="form-inp" id="m-char" placeholder="你好"></div>
+    <div class="form-group"><label class="form-label">Pinyin</label><input class="form-inp" id="m-py" placeholder="nǐ hǎo"></div>
+    <div class="form-group"><label class="form-label">Significado</label><input class="form-inp" id="m-mean" placeholder="hola"></div>
+    <div class="form-group"><label class="form-label">Categoría</label><select class="form-sel" id="m-cat"></select></div>
+    <div class="form-group"><label class="form-label">Nivel</label><select class="form-sel" id="m-lvl"><option>HSK1</option><option>HSK2</option><option>HSK3</option></select></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveWord()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+
+const CATS = ['Saludos','Pronombres','Familia','Números','Tiempo','Colores',
+  'Comida y bebida','Ropa','Cuerpo','Lugar','Transporte','Trabajo y estudio',
+  'Verbos comunes','Adjetivos','Preguntas','Partículas','Objetos cotidianos',
+  'Naturaleza','Animales','Otros'];
+
+const CAT_EMOJI = {
+  'Saludos':'👋','Pronombres':'🧑','Familia':'👨‍👩‍👧','Números':'🔢','Tiempo':'⏰',
+  'Colores':'🎨','Comida y bebida':'🍜','Ropa':'👕','Cuerpo':'🫀','Lugar':'📍',
+  'Transporte':'🚗','Trabajo y estudio':'💼','Verbos comunes':'⚡','Adjetivos':'✨',
+  'Preguntas':'❓','Partículas':'🔤','Objetos cotidianos':'📦','Naturaleza':'🌿',
+  'Animales':'🐾','Otros':'💬'
+};
+
+const EMOJI = {
+  '你好':'👋','谢谢':'🙏','再见':'👋','对不起':'😔','不客气':'😊','没关系':'👌',
+  '爱':'❤️','爱好':'🎯','喂':'📞','先生':'👔','小姐':'👩',
+  '我':'🧑','你':'👤','他':'👨','她':'👩','我们':'👥','你们':'👫','他们':'👨‍👩‍👦',
+  '她们':'👩‍👩‍👦','那':'👈','这':'👉','人':'🧑','自己':'🪞',
+  '爸爸':'👨','妈妈':'👩','朋友':'🤝','哥哥':'👦','姐姐':'👧','弟弟':'👶',
+  '妹妹':'👶','儿子':'👦','女儿':'👧','丈夫':'💍','妻子':'💒','孩子':'🧒',
+  '家人':'👨‍👩‍👧','奶奶':'👵','爷爷':'👴','外公':'👴','外婆':'👵',
+  '男朋友':'💑','女朋友':'💑','男人':'👨','女人':'👩','男孩子':'👦','女孩子':'👧',
+  '兄弟姐妹':'👨‍👩‍👧‍👦',
+  '一':'1️⃣','二':'2️⃣','三':'3️⃣','四':'4️⃣','五':'5️⃣','六':'6️⃣','七':'7️⃣',
+  '八':'8️⃣','九':'9️⃣','十':'🔟','百':'💯','零':'0️⃣','两':'2️⃣','半':'½','岁':'🎂',
+  '今天':'📅','明天':'🔜','昨天':'🔙','年':'📆','月':'🌙','日':'☀️','时候':'⏰',
+  '现在':'🕐','上午':'🌅','下午':'🌇','中午':'🌞','早上':'🌄','晚上':'🌙',
+  '星期':'📅','周末':'🎉','小时':'⏱️','分钟':'⏱️','以前':'⏪','以后':'⏩',
+  '今年':'📅','明年':'🗓️','去年':'🗓️','每天':'🔁','时间':'⏰','生日':'🎂',
+  '圣诞节':'🎄','点':'🕐','刻':'⏱️','天':'☀️','日期':'📅','新年':'🎆',
+  '水':'💧','茶':'🍵','饭':'🍚','苹果':'🍎','菜':'🥬','鸡蛋':'🥚','米饭':'🍚',
+  '牛奶':'🥛','面条':'🍜','鱼':'🐟','肉':'🥩','猪肉':'🐷','鸡肉':'🍗',
+  '西瓜':'🍉','香蕉':'🍌','葡萄':'🍇','咖啡':'☕','红酒':'🍷','啤酒':'🍺',
+  '可乐':'🥤','果汁':'🍹','面包':'🍞','沙拉':'🥗','蛋糕':'🎂','薯条':'🍟',
+  '酸奶':'🥛','奶酪':'🧀','冰淇淋':'🍦','火腿':'🥩','饮料':'🥤','食物':'🍽️',
+  '好吃':'😋','好喝':'😋','甜':'🍯','甜点':'🍰','布丁':'🍮','春卷儿':'🥟',
+  '汉堡':'🍔','意大利面':'🍝','海鲜饭':'🥘','长寿面':'🍜','冰':'🧊','早饭':'🌅',
+  '午饭':'🌞','晚饭':'🌙','水果':'🍎','酒':'🍶',
+  '红色':'🔴','白色':'⚪','黑色':'⚫','黄色':'🟡','蓝色':'🔵','绿色':'🟢','颜色':'🎨',
+  '衣服':'👕','裤子':'👖','鞋':'👟','帽子':'🧢',
+  '头':'🗣️','眼睛':'👁️','耳朵':'👂','鼻子':'👃','嘴':'👄','手':'✋','脚':'🦶',
+  '猫':'🐱','狗':'🐶','鸡':'🐔','马':'🐴','羊':'🐑','蛇':'🐍','兔':'🐰',
+  '出租车':'🚕','飞机':'✈️','火车':'🚂','公共汽车':'🚌','地铁':'🚇',
+  '自行车':'🚲','汽车':'🚗','摩托车':'🏍️',
+  '中国':'🇨🇳','北京':'🏙️','学校':'🏫','商店':'🏪','饭店':'🍽️','家':'🏠',
+  '医院':'🏥','银行':'🏦','超市':'🛒','公司':'🏢','大学':'🏛️','书店':'📚',
+  '小学':'🏫','中学':'🏫','公园':'🌳','城市':'🏙️',
+  '上':'⬆️','下':'⬇️','里':'📦','外':'🌐','左':'⬅️','右':'➡️','前':'🔼',
+  '后':'🔽','旁边':'↔️','地方':'📍','附近':'📍','中':'⬛',
+  '医生':'👨‍⚕️','老师':'👨‍🏫','学生':'🎓','学习':'📚','工作':'💼',
+  '中文':'🀄','汉语':'🀄','汉字':'✍️','问题':'❓','作业':'📝','考试':'📋',
+  '同学':'👫','服务员':'🧑‍🍳','司机':'🧑‍✈️','运动员':'🏃','课':'📚',
+  '语言':'🗣️','英语':'🇬🇧','法语':'🇫🇷',
+  '电话':'📞','电视':'📺','电脑':'💻','书':'📖','钱':'💰','杯子':'🥤',
+  '桌子':'🪑','椅子':'🪑','手机':'📱','护照':'🛂','票':'🎫','地图':'🗺️',
+  '眼镜':'👓','药':'💊','照片':'📸','故事':'📖','音乐':'🎵','电影':'🎬',
+  '天气':'🌤️','雨':'🌧️','雪':'❄️','风':'🌬️','太阳':'☀️','冰':'🧊',
+  '大':'🔆','小':'🔅','多':'➕','少':'➖','好':'👍','热':'🌡️','冷':'❄️',
+  '高兴':'😄','漂亮':'✨','快':'⚡','慢':'🐢','长':'📏','短':'📐',
+  '新':'🆕','旧':'🕰️','贵':'💎','便宜':'🏷️','累':'😴','难':'😣','容易':'😌',
+  '有名':'⭐','对':'✅','一样':'🟰','方便':'👌','干净':'✨','安静':'🤫',
+  '健康':'💪','聪明':'🧠','帅':'😎','甜':'🍯','快乐':'😊','渴':'🥤','饿':'😋',
+  '好吃':'😋','远':'🏔️','有意思':'💡','真':'✅',
+  '喝':'🥤','吃':'🍽️','来':'➡️','去':'🚶','看':'👀','说':'💬','听':'👂',
+  '叫':'📣','是':'✔️','有':'✔️','买':'🛍️','开':'🔑','写':'✏️','坐':'🪑',
+  '认识':'🤝','知道':'💡','想':'💭','喜欢':'❤️','需要':'📋','能':'💪',
+  '可以':'✅','应该':'☝️','帮助':'🤲','等':'⏳','告诉':'💬','找':'🔍',
+  '运动':'🏃','游泳':'🏊','跑步':'🏃','唱歌':'🎤','跳舞':'💃','睡觉':'😴',
+  '起床':'⏰','洗澡':'🚿','刷牙':'🪥','到':'📍','遇到':'🤝','回':'↩️',
+  '会':'🎓','见':'👁️','画':'🎨','懂':'💡','读':'📖','爱':'❤️','骑':'🚴',
+  '请':'🙏','做':'🛠️','做饭':'👨‍🍳','走路':'🚶','祝':'🎉','复习':'📚',
+  '出生':'👶','上课':'🏫','下课':'🔔','休息':'😴','猜':'🤔','告诉':'💬',
+  '踢足球':'⚽','打篮球':'🏀','听说':'👂','一边':'🔄','在':'📍',
+  '旅游':'✈️','已经':'✅','还':'↩️','又':'🔄','再':'🔁','比':'⚖️',
+  '从':'📍','如果':'❓','但是':'↔️','因为':'💡','所以':'➡️','虽然':'🤔',
+  '也':'➕','都':'🔢','很':'💯','太':'⬆️','不':'❌','没有':'❌','的':'🔗',
+  '了':'✅','吗':'❓','呢':'❓','和':'➕','非常':'💯','还是':'🔀','正在':'🔄',
+  '一点儿':'🔅','最':'🥇','真':'✅',
+  '爱好':'🎯','东西':'📦','生活':'🌱','生肖':'🐉','国籍':'🌍','姓':'👤',
+  '姓名':'📛','名字':'📛','一起':'🤝','性别':'👫','午觉':'😴','岁':'🎂',
+  '兄弟姐妹':'👨‍👩‍👧‍👦','交通工具':'🚌',
+  '裙子':'👗','外套':'🧥','毛衣':'🧶','牛仔裤':'👖','衬衫':'👔','T恤衫':'👕',
+  '运动鞋':'👟','校服':'🎒','短裤':'🩳','袜子':'🧦','西装':'🤵',
+  '粉红色':'🌸','橙色':'🟠','紫色':'🟣','灰色':'🩶','棕色':'🟫','咖啡色':'☕',
+  '穿':'👕','觉得':'🤔','用':'🔧','付':'💳','刷卡':'💳','付现金':'💵',
+  '微信':'💬','支付宝':'📱','银行卡':'💳','块':'💴','套':'🧥','副':'👓','架':'✈️',
+  '春节':'🧨','中秋节':'🥮','端午节':'🐉','元宵节':'🏮',
+  '这些':'👈','那些':'👉','那个':'☝️','好看':'✨','图书馆':'📚',
+  '餐厅':'🍽️','卖':'🏷️','有点儿':'🔅','就':'➡️','卫衣':'🧥',
+};
+
+function E(c) { return EMOJI[c] || ''; }
+
+let vocab = [
+  // HSK1
+  {id:1,c:'你好',p:'nǐ hǎo',m:'hola',cat:'Saludos',lvl:'HSK1'},
+  {id:2,c:'谢谢',p:'xiè xie',m:'gracias',cat:'Saludos',lvl:'HSK1'},
+  {id:3,c:'再见',p:'zài jiàn',m:'adiós',cat:'Saludos',lvl:'HSK1'},
+  {id:4,c:'对不起',p:'duì bu qǐ',m:'lo siento',cat:'Saludos',lvl:'HSK1'},
+  {id:5,c:'不客气',p:'bú kè qi',m:'de nada',cat:'Saludos',lvl:'HSK1'},
+  {id:6,c:'没关系',p:'méi guānxi',m:'no pasa nada',cat:'Saludos',lvl:'HSK1'},
+  {id:7,c:'先生',p:'xiānsheng',m:'señor / marido',cat:'Saludos',lvl:'HSK1'},
+  {id:8,c:'小姐',p:'xiǎojiě',m:'señorita',cat:'Saludos',lvl:'HSK2'},
+  {id:9,c:'喂',p:'wèi',m:'hola (por teléfono)',cat:'Saludos',lvl:'HSK2'},
+  {id:10,c:'不好意思',p:'bù hǎoyìsi',m:'perdón / disculpa',cat:'Saludos',lvl:'HSK2'},
+  {id:11,c:'我',p:'wǒ',m:'yo',cat:'Pronombres',lvl:'HSK1'},
+  {id:12,c:'你',p:'nǐ',m:'tú',cat:'Pronombres',lvl:'HSK1'},
+  {id:13,c:'他',p:'tā',m:'él',cat:'Pronombres',lvl:'HSK1'},
+  {id:14,c:'她',p:'tā',m:'ella',cat:'Pronombres',lvl:'HSK1'},
+  {id:15,c:'我们',p:'wǒmen',m:'nosotros',cat:'Pronombres',lvl:'HSK1'},
+  {id:16,c:'你们',p:'nǐmen',m:'vosotros / ustedes',cat:'Pronombres',lvl:'HSK1'},
+  {id:17,c:'他们',p:'tāmen',m:'ellos',cat:'Pronombres',lvl:'HSK1'},
+  {id:18,c:'她们',p:'tāmen',m:'ellas',cat:'Pronombres',lvl:'HSK1'},
+  {id:19,c:'那',p:'nà',m:'ese / esa / entonces',cat:'Pronombres',lvl:'HSK1'},
+  {id:20,c:'这',p:'zhè',m:'este / esta / esto',cat:'Pronombres',lvl:'HSK1'},
+  {id:21,c:'人',p:'rén',m:'persona / gente',cat:'Pronombres',lvl:'HSK1'},
+  {id:22,c:'自己',p:'zìjǐ',m:'uno mismo',cat:'Pronombres',lvl:'HSK2'},
+  {id:23,c:'爸爸',p:'bàba',m:'papá',cat:'Familia',lvl:'HSK1'},
+  {id:24,c:'妈妈',p:'māma',m:'mamá',cat:'Familia',lvl:'HSK1'},
+  {id:25,c:'朋友',p:'péngyou',m:'amigo/a',cat:'Familia',lvl:'HSK1'},
+  {id:26,c:'哥哥',p:'gēge',m:'hermano mayor',cat:'Familia',lvl:'HSK1'},
+  {id:27,c:'姐姐',p:'jiějie',m:'hermana mayor',cat:'Familia',lvl:'HSK1'},
+  {id:28,c:'弟弟',p:'dìdi',m:'hermano menor',cat:'Familia',lvl:'HSK1'},
+  {id:29,c:'妹妹',p:'mèimei',m:'hermana menor',cat:'Familia',lvl:'HSK1'},
+  {id:30,c:'儿子',p:'érzi',m:'hijo',cat:'Familia',lvl:'HSK1'},
+  {id:31,c:'女儿',p:'nǚér',m:'hija',cat:'Familia',lvl:'HSK1'},
+  {id:32,c:'丈夫',p:'zhàngfu',m:'marido',cat:'Familia',lvl:'HSK2'},
+  {id:33,c:'妻子',p:'qīzi',m:'esposa',cat:'Familia',lvl:'HSK2'},
+  {id:34,c:'孩子',p:'háizi',m:'niño / hijo',cat:'Familia',lvl:'HSK1'},
+  {id:35,c:'家人',p:'jiārén',m:'familia',cat:'Familia',lvl:'HSK1'},
+  {id:36,c:'奶奶',p:'nǎinai',m:'abuela paterna',cat:'Familia',lvl:'HSK1'},
+  {id:37,c:'爷爷',p:'yéye',m:'abuelo paterno',cat:'Familia',lvl:'HSK1'},
+  {id:38,c:'外公',p:'wàigōng',m:'abuelo materno',cat:'Familia',lvl:'HSK2'},
+  {id:39,c:'外婆',p:'wàipó',m:'abuela materna',cat:'Familia',lvl:'HSK2'},
+  {id:40,c:'男朋友',p:'nánpéngyou',m:'novio',cat:'Familia',lvl:'HSK1'},
+  {id:41,c:'女朋友',p:'nǚpéngyou',m:'novia',cat:'Familia',lvl:'HSK1'},
+  {id:42,c:'男人',p:'nánrén',m:'hombre',cat:'Familia',lvl:'HSK2'},
+  {id:43,c:'女人',p:'nǚrén',m:'mujer',cat:'Familia',lvl:'HSK2'},
+  {id:44,c:'男孩子',p:'nánháizi',m:'chico',cat:'Familia',lvl:'HSK1'},
+  {id:45,c:'女孩子',p:'nǚháizi',m:'chica',cat:'Familia',lvl:'HSK1'},
+  {id:46,c:'家庭成员',p:'jiātíng chéngyuán',m:'miembro de familia',cat:'Familia',lvl:'HSK2'},
+  {id:47,c:'兄弟姐妹',p:'xiōngdì jiěmèi',m:'hermanos y hermanas',cat:'Familia',lvl:'HSK2'},
+  {id:48,c:'一',p:'yī',m:'uno',cat:'Números',lvl:'HSK1'},
+  {id:49,c:'二',p:'èr',m:'dos',cat:'Números',lvl:'HSK1'},
+  {id:50,c:'三',p:'sān',m:'tres',cat:'Números',lvl:'HSK1'},
+  {id:51,c:'四',p:'sì',m:'cuatro',cat:'Números',lvl:'HSK1'},
+  {id:52,c:'五',p:'wǔ',m:'cinco',cat:'Números',lvl:'HSK1'},
+  {id:53,c:'六',p:'liù',m:'seis',cat:'Números',lvl:'HSK1'},
+  {id:54,c:'七',p:'qī',m:'siete',cat:'Números',lvl:'HSK1'},
+  {id:55,c:'八',p:'bā',m:'ocho',cat:'Números',lvl:'HSK1'},
+  {id:56,c:'九',p:'jiǔ',m:'nueve',cat:'Números',lvl:'HSK1'},
+  {id:57,c:'十',p:'shí',m:'diez',cat:'Números',lvl:'HSK1'},
+  {id:58,c:'百',p:'bǎi',m:'cien',cat:'Números',lvl:'HSK1'},
+  {id:59,c:'零',p:'líng',m:'cero',cat:'Números',lvl:'HSK1'},
+  {id:60,c:'两',p:'liǎng',m:'dos (cantidad)',cat:'Números',lvl:'HSK1'},
+  {id:61,c:'半',p:'bàn',m:'mitad / y media',cat:'Números',lvl:'HSK1'},
+  {id:62,c:'岁',p:'suì',m:'años de edad',cat:'Números',lvl:'HSK1'},
+  {id:63,c:'今天',p:'jīntiān',m:'hoy',cat:'Tiempo',lvl:'HSK1'},
+  {id:64,c:'明天',p:'míngtiān',m:'mañana',cat:'Tiempo',lvl:'HSK1'},
+  {id:65,c:'昨天',p:'zuótiān',m:'ayer',cat:'Tiempo',lvl:'HSK1'},
+  {id:66,c:'年',p:'nián',m:'año',cat:'Tiempo',lvl:'HSK1'},
+  {id:67,c:'月',p:'yuè',m:'mes / luna',cat:'Tiempo',lvl:'HSK1'},
+  {id:68,c:'日',p:'rì',m:'día / sol',cat:'Tiempo',lvl:'HSK1'},
+  {id:69,c:'号',p:'hào',m:'día (fecha) / número',cat:'Tiempo',lvl:'HSK1'},
+  {id:70,c:'时候',p:'shíhou',m:'momento / cuando',cat:'Tiempo',lvl:'HSK1'},
+  {id:71,c:'现在',p:'xiànzài',m:'ahora',cat:'Tiempo',lvl:'HSK1'},
+  {id:72,c:'上午',p:'shàngwǔ',m:'por la mañana',cat:'Tiempo',lvl:'HSK1'},
+  {id:73,c:'下午',p:'xiàwǔ',m:'por la tarde',cat:'Tiempo',lvl:'HSK1'},
+  {id:74,c:'中午',p:'zhōngwǔ',m:'mediodía',cat:'Tiempo',lvl:'HSK1'},
+  {id:75,c:'早上',p:'zǎoshang',m:'por la mañana (temprano)',cat:'Tiempo',lvl:'HSK1'},
+  {id:76,c:'晚上',p:'wǎnshang',m:'por la noche',cat:'Tiempo',lvl:'HSK1'},
+  {id:77,c:'星期',p:'xīngqī',m:'semana / día de la semana',cat:'Tiempo',lvl:'HSK1'},
+  {id:78,c:'周末',p:'zhōumò',m:'fin de semana',cat:'Tiempo',lvl:'HSK2'},
+  {id:79,c:'小时',p:'xiǎoshí',m:'hora',cat:'Tiempo',lvl:'HSK1'},
+  {id:80,c:'分钟',p:'fēnzhōng',m:'minuto',cat:'Tiempo',lvl:'HSK1'},
+  {id:81,c:'点',p:'diǎn',m:'en punto / señalar hora',cat:'Tiempo',lvl:'HSK1'},
+  {id:82,c:'刻',p:'kè',m:'cuarto de hora',cat:'Tiempo',lvl:'HSK1'},
+  {id:83,c:'天',p:'tiān',m:'cielo / día',cat:'Tiempo',lvl:'HSK1'},
+  {id:84,c:'以前',p:'yǐqián',m:'antes / hace tiempo',cat:'Tiempo',lvl:'HSK2'},
+  {id:85,c:'以后',p:'yǐhòu',m:'después / en el futuro',cat:'Tiempo',lvl:'HSK2'},
+  {id:86,c:'今年',p:'jīnnián',m:'este año',cat:'Tiempo',lvl:'HSK1'},
+  {id:87,c:'明年',p:'míngnián',m:'el próximo año',cat:'Tiempo',lvl:'HSK2'},
+  {id:88,c:'去年',p:'qùnián',m:'el año pasado',cat:'Tiempo',lvl:'HSK2'},
+  {id:89,c:'每天',p:'měitiān',m:'cada día / todos los días',cat:'Tiempo',lvl:'HSK2'},
+  {id:90,c:'时间',p:'shíjiān',m:'tiempo / hora',cat:'Tiempo',lvl:'HSK1'},
+  {id:91,c:'生日',p:'shēngrì',m:'cumpleaños',cat:'Tiempo',lvl:'HSK1'},
+  {id:92,c:'圣诞节',p:'Shèngdàn Jié',m:'Navidad',cat:'Tiempo',lvl:'HSK2'},
+  {id:93,c:'新年',p:'xīnnián',m:'año nuevo',cat:'Tiempo',lvl:'HSK2'},
+  {id:94,c:'日期',p:'rìqī',m:'fecha',cat:'Tiempo',lvl:'HSK2'},
+  {id:95,c:'水',p:'shuǐ',m:'agua',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:96,c:'茶',p:'chá',m:'té',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:97,c:'饭',p:'fàn',m:'arroz / comida',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:98,c:'苹果',p:'píngguǒ',m:'manzana',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:99,c:'菜',p:'cài',m:'verdura / plato',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:100,c:'鸡蛋',p:'jīdàn',m:'huevo',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:101,c:'米饭',p:'mǐfàn',m:'arroz cocido',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:102,c:'牛奶',p:'niúnǎi',m:'leche',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:103,c:'面条',p:'miàntiáo',m:'fideos / tallarines',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:104,c:'鱼',p:'yú',m:'pescado',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:105,c:'肉',p:'ròu',m:'carne',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:106,c:'猪肉',p:'zhūròu',m:'cerdo',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:107,c:'鸡肉',p:'jīròu',m:'pollo',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:108,c:'西瓜',p:'xīguā',m:'sandía',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:109,c:'香蕉',p:'xiāngjiāo',m:'plátano',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:110,c:'葡萄',p:'pútao',m:'uva',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:111,c:'咖啡',p:'kāfēi',m:'café',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:112,c:'红酒',p:'hóngjiǔ',m:'vino tinto',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:113,c:'啤酒',p:'píjiǔ',m:'cerveza',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:114,c:'可乐',p:'kělè',m:'cola / refresco',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:115,c:'果汁',p:'guǒzhī',m:'zumo / jugo',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:116,c:'面包',p:'miànbāo',m:'pan',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:117,c:'蛋糕',p:'dàngāo',m:'tarta / pastel',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:118,c:'薯条',p:'shǔtiáo',m:'patatas fritas',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:119,c:'沙拉',p:'shālā',m:'ensalada',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:120,c:'酸奶',p:'suānnǎi',m:'yogur',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:121,c:'奶酪',p:'nǎilào',m:'queso',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:122,c:'冰淇淋',p:'bīngqílín',m:'helado',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:123,c:'甜点',p:'tiándiǎn',m:'postre',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:124,c:'火腿',p:'huǒtuǐ',m:'jamón',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:125,c:'汉堡',p:'hànbǎo',m:'hamburguesa',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:126,c:'春卷儿',p:'chūnjuǎnr',m:'rollito de primavera',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:127,c:'意大利面',p:'yìdàlì miàn',m:'espagueti',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:128,c:'海鲜饭',p:'hǎixiān fàn',m:'paella de marisco',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:129,c:'长寿面',p:'chángshòu miàn',m:'fideos de la longevidad',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:130,c:'饮料',p:'yǐnliào',m:'bebida',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:131,c:'食物',p:'shíwù',m:'comida / alimento',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:132,c:'酒',p:'jiǔ',m:'bebida alcohólica',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:133,c:'水果',p:'shuǐguǒ',m:'fruta',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:134,c:'早饭',p:'zǎofàn',m:'desayuno',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:135,c:'午饭',p:'wǔfàn',m:'almuerzo',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:136,c:'晚饭',p:'wǎnfàn',m:'cena',cat:'Comida y bebida',lvl:'HSK1'},
+  {id:137,c:'布丁',p:'bùdīng',m:'pudín',cat:'Comida y bebida',lvl:'HSK2'},
+  {id:138,c:'红色',p:'hóngsè',m:'rojo',cat:'Colores',lvl:'HSK2'},
+  {id:139,c:'白色',p:'báisè',m:'blanco',cat:'Colores',lvl:'HSK2'},
+  {id:140,c:'黑色',p:'hēisè',m:'negro',cat:'Colores',lvl:'HSK2'},
+  {id:141,c:'黄色',p:'huángsè',m:'amarillo',cat:'Colores',lvl:'HSK2'},
+  {id:142,c:'蓝色',p:'lánsè',m:'azul',cat:'Colores',lvl:'HSK2'},
+  {id:143,c:'绿色',p:'lǜsè',m:'verde',cat:'Colores',lvl:'HSK2'},
+  {id:144,c:'颜色',p:'yánsè',m:'color',cat:'Colores',lvl:'HSK2'},
+  {id:145,c:'衣服',p:'yīfu',m:'ropa',cat:'Ropa',lvl:'HSK2'},
+  {id:146,c:'裤子',p:'kùzi',m:'pantalón',cat:'Ropa',lvl:'HSK2'},
+  {id:147,c:'鞋',p:'xié',m:'zapato',cat:'Ropa',lvl:'HSK2'},
+  {id:148,c:'帽子',p:'màozi',m:'sombrero / gorra',cat:'Ropa',lvl:'HSK2'},
+  {id:149,c:'头',p:'tóu',m:'cabeza',cat:'Cuerpo',lvl:'HSK2'},
+  {id:150,c:'眼睛',p:'yǎnjīng',m:'ojos',cat:'Cuerpo',lvl:'HSK2'},
+  {id:151,c:'耳朵',p:'ěrduǒ',m:'oreja / oído',cat:'Cuerpo',lvl:'HSK2'},
+  {id:152,c:'鼻子',p:'bízi',m:'nariz',cat:'Cuerpo',lvl:'HSK2'},
+  {id:153,c:'嘴',p:'zuǐ',m:'boca',cat:'Cuerpo',lvl:'HSK2'},
+  {id:154,c:'手',p:'shǒu',m:'mano',cat:'Cuerpo',lvl:'HSK2'},
+  {id:155,c:'脚',p:'jiǎo',m:'pie',cat:'Cuerpo',lvl:'HSK2'},
+  {id:156,c:'猫',p:'māo',m:'gato',cat:'Animales',lvl:'HSK1'},
+  {id:157,c:'狗',p:'gǒu',m:'perro',cat:'Animales',lvl:'HSK1'},
+  {id:158,c:'鸡',p:'jī',m:'pollo / gallo',cat:'Animales',lvl:'HSK2'},
+  {id:159,c:'马',p:'mǎ',m:'caballo',cat:'Animales',lvl:'HSK2'},
+  {id:160,c:'羊',p:'yáng',m:'cabra / oveja',cat:'Animales',lvl:'HSK2'},
+  {id:161,c:'蛇',p:'shé',m:'serpiente',cat:'Animales',lvl:'HSK2'},
+  {id:162,c:'兔',p:'tù',m:'conejo',cat:'Animales',lvl:'HSK2'},
+  {id:163,c:'出租车',p:'chūzūchē',m:'taxi',cat:'Transporte',lvl:'HSK1'},
+  {id:164,c:'飞机',p:'fēijī',m:'avión',cat:'Transporte',lvl:'HSK1'},
+  {id:165,c:'火车',p:'huǒchē',m:'tren',cat:'Transporte',lvl:'HSK2'},
+  {id:166,c:'公共汽车',p:'gōnggòng qìchē',m:'autobús',cat:'Transporte',lvl:'HSK2'},
+  {id:167,c:'地铁',p:'dìtiě',m:'metro',cat:'Transporte',lvl:'HSK2'},
+  {id:168,c:'自行车',p:'zìxíngchē',m:'bicicleta',cat:'Transporte',lvl:'HSK2'},
+  {id:169,c:'汽车',p:'qìchē',m:'coche',cat:'Transporte',lvl:'HSK2'},
+  {id:170,c:'摩托车',p:'mótuōchē',m:'motocicleta',cat:'Transporte',lvl:'HSK3'},
+  {id:171,c:'交通工具',p:'jiāotōng gōngjù',m:'medio de transporte',cat:'Transporte',lvl:'HSK2'},
+  {id:172,c:'中国',p:'Zhōngguó',m:'China',cat:'Lugar',lvl:'HSK1'},
+  {id:173,c:'北京',p:'Běijīng',m:'Pekín',cat:'Lugar',lvl:'HSK1'},
+  {id:174,c:'学校',p:'xuéxiào',m:'escuela / colegio',cat:'Lugar',lvl:'HSK1'},
+  {id:175,c:'商店',p:'shāngdiàn',m:'tienda',cat:'Lugar',lvl:'HSK1'},
+  {id:176,c:'饭店',p:'fàndiàn',m:'restaurante / hotel',cat:'Lugar',lvl:'HSK1'},
+  {id:177,c:'家',p:'jiā',m:'casa / hogar / familia',cat:'Lugar',lvl:'HSK1'},
+  {id:178,c:'医院',p:'yīyuàn',m:'hospital',cat:'Lugar',lvl:'HSK2'},
+  {id:179,c:'银行',p:'yínháng',m:'banco',cat:'Lugar',lvl:'HSK2'},
+  {id:180,c:'超市',p:'chāoshì',m:'supermercado',cat:'Lugar',lvl:'HSK2'},
+  {id:181,c:'公司',p:'gōngsī',m:'empresa',cat:'Lugar',lvl:'HSK2'},
+  {id:182,c:'大学',p:'dàxué',m:'universidad',cat:'Lugar',lvl:'HSK1'},
+  {id:183,c:'书店',p:'shūdiàn',m:'librería',cat:'Lugar',lvl:'HSK2'},
+  {id:184,c:'小学',p:'xiǎoxué',m:'escuela primaria',cat:'Lugar',lvl:'HSK2'},
+  {id:185,c:'中学',p:'zhōngxué',m:'escuela secundaria',cat:'Lugar',lvl:'HSK2'},
+  {id:186,c:'公园',p:'gōngyuán',m:'parque',cat:'Lugar',lvl:'HSK2'},
+  {id:187,c:'城市',p:'chéngshì',m:'ciudad',cat:'Lugar',lvl:'HSK2'},
+  {id:188,c:'地方',p:'dìfang',m:'lugar / sitio',cat:'Lugar',lvl:'HSK1'},
+  {id:189,c:'附近',p:'fùjìn',m:'cerca de / cercanías',cat:'Lugar',lvl:'HSK2'},
+  {id:190,c:'上',p:'shàng',m:'arriba / encima',cat:'Lugar',lvl:'HSK2'},
+  {id:191,c:'下',p:'xià',m:'abajo / debajo',cat:'Lugar',lvl:'HSK2'},
+  {id:192,c:'里',p:'lǐ',m:'dentro / interior',cat:'Lugar',lvl:'HSK2'},
+  {id:193,c:'外',p:'wài',m:'fuera / exterior',cat:'Lugar',lvl:'HSK2'},
+  {id:194,c:'左',p:'zuǒ',m:'izquierda',cat:'Lugar',lvl:'HSK2'},
+  {id:195,c:'右',p:'yòu',m:'derecha',cat:'Lugar',lvl:'HSK2'},
+  {id:196,c:'前',p:'qián',m:'delante / antes',cat:'Lugar',lvl:'HSK1'},
+  {id:197,c:'后',p:'hòu',m:'detrás / después',cat:'Lugar',lvl:'HSK1'},
+  {id:198,c:'旁边',p:'pángbiān',m:'al lado',cat:'Lugar',lvl:'HSK2'},
+  {id:199,c:'中',p:'zhōng',m:'medio / centro',cat:'Lugar',lvl:'HSK1'},
+  {id:200,c:'医生',p:'yīshēng',m:'médico',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:201,c:'老师',p:'lǎoshī',m:'profesor/a',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:202,c:'学生',p:'xuésheng',m:'estudiante',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:203,c:'学习',p:'xuéxí',m:'estudiar / aprender',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:204,c:'工作',p:'gōngzuò',m:'trabajar / trabajo',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:205,c:'中文',p:'Zhōngwén',m:'chino (idioma)',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:206,c:'汉语',p:'Hànyǔ',m:'chino mandarín',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:207,c:'汉字',p:'Hànzì',m:'carácter chino',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:208,c:'问题',p:'wèntí',m:'problema / pregunta',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:209,c:'作业',p:'zuòyè',m:'deberes / tarea',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:210,c:'考试',p:'kǎoshì',m:'examen',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:211,c:'同学',p:'tóngxué',m:'compañero de clase',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:212,c:'课',p:'kè',m:'lección / clase',cat:'Trabajo y estudio',lvl:'HSK1'},
+  {id:213,c:'服务员',p:'fúwùyuán',m:'camarero / camarera',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:214,c:'司机',p:'sījī',m:'conductor',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:215,c:'运动员',p:'yùndòngyuán',m:'deportista',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:216,c:'英语',p:'Yīngyǔ',m:'inglés (idioma)',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:217,c:'法语',p:'Fǎyǔ',m:'francés (idioma)',cat:'Trabajo y estudio',lvl:'HSK3'},
+  {id:218,c:'语言',p:'yǔyán',m:'idioma / lengua',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:219,c:'复习',p:'fùxí',m:'repasar',cat:'Trabajo y estudio',lvl:'HSK2'},
+  {id:220,c:'大',p:'dà',m:'grande',cat:'Adjetivos',lvl:'HSK1'},
+  {id:221,c:'小',p:'xiǎo',m:'pequeño',cat:'Adjetivos',lvl:'HSK1'},
+  {id:222,c:'多',p:'duō',m:'mucho',cat:'Adjetivos',lvl:'HSK1'},
+  {id:223,c:'少',p:'shǎo',m:'poco',cat:'Adjetivos',lvl:'HSK1'},
+  {id:224,c:'好',p:'hǎo',m:'bueno / bien',cat:'Adjetivos',lvl:'HSK1'},
+  {id:225,c:'热',p:'rè',m:'caliente / calor',cat:'Adjetivos',lvl:'HSK1'},
+  {id:226,c:'冷',p:'lěng',m:'frío',cat:'Adjetivos',lvl:'HSK1'},
+  {id:227,c:'高兴',p:'gāoxìng',m:'contento / feliz',cat:'Adjetivos',lvl:'HSK1'},
+  {id:228,c:'漂亮',p:'piàoliang',m:'bonito / guapo',cat:'Adjetivos',lvl:'HSK1'},
+  {id:229,c:'快',p:'kuài',m:'rápido / pronto',cat:'Adjetivos',lvl:'HSK2'},
+  {id:230,c:'慢',p:'màn',m:'lento',cat:'Adjetivos',lvl:'HSK2'},
+  {id:231,c:'长',p:'cháng',m:'largo',cat:'Adjetivos',lvl:'HSK2'},
+  {id:232,c:'短',p:'duǎn',m:'corto',cat:'Adjetivos',lvl:'HSK2'},
+  {id:233,c:'新',p:'xīn',m:'nuevo',cat:'Adjetivos',lvl:'HSK2'},
+  {id:234,c:'旧',p:'jiù',m:'viejo / antiguo',cat:'Adjetivos',lvl:'HSK2'},
+  {id:235,c:'贵',p:'guì',m:'caro',cat:'Adjetivos',lvl:'HSK2'},
+  {id:236,c:'便宜',p:'piányi',m:'barato',cat:'Adjetivos',lvl:'HSK2'},
+  {id:237,c:'累',p:'lèi',m:'cansado',cat:'Adjetivos',lvl:'HSK2'},
+  {id:238,c:'难',p:'nán',m:'difícil',cat:'Adjetivos',lvl:'HSK2'},
+  {id:239,c:'容易',p:'róngyì',m:'fácil',cat:'Adjetivos',lvl:'HSK2'},
+  {id:240,c:'有名',p:'yǒumíng',m:'famoso',cat:'Adjetivos',lvl:'HSK2'},
+  {id:241,c:'对',p:'duì',m:'correcto / hacia',cat:'Adjetivos',lvl:'HSK2'},
+  {id:242,c:'一样',p:'yīyàng',m:'igual / lo mismo',cat:'Adjetivos',lvl:'HSK2'},
+  {id:243,c:'方便',p:'fāngbiàn',m:'conveniente',cat:'Adjetivos',lvl:'HSK2'},
+  {id:244,c:'干净',p:'gānjìng',m:'limpio',cat:'Adjetivos',lvl:'HSK2'},
+  {id:245,c:'安静',p:'ānjìng',m:'tranquilo / silencioso',cat:'Adjetivos',lvl:'HSK2'},
+  {id:246,c:'健康',p:'jiànkāng',m:'sano / salud',cat:'Adjetivos',lvl:'HSK2'},
+  {id:247,c:'聪明',p:'cōngming',m:'inteligente',cat:'Adjetivos',lvl:'HSK2'},
+  {id:248,c:'帅',p:'shuài',m:'guapo',cat:'Adjetivos',lvl:'HSK2'},
+  {id:249,c:'甜',p:'tián',m:'dulce',cat:'Adjetivos',lvl:'HSK2'},
+  {id:250,c:'快乐',p:'kuàilè',m:'feliz / alegre',cat:'Adjetivos',lvl:'HSK2'},
+  {id:251,c:'渴',p:'kě',m:'sediento / tener sed',cat:'Adjetivos',lvl:'HSK1'},
+  {id:252,c:'饿',p:'è',m:'hambriento / tener hambre',cat:'Adjetivos',lvl:'HSK1'},
+  {id:253,c:'好吃',p:'hǎochī',m:'rico (comida)',cat:'Adjetivos',lvl:'HSK1'},
+  {id:254,c:'远',p:'yuǎn',m:'lejano / lejos',cat:'Adjetivos',lvl:'HSK2'},
+  {id:255,c:'有意思',p:'yǒu yìsi',m:'interesante',cat:'Adjetivos',lvl:'HSK2'},
+  {id:256,c:'真',p:'zhēn',m:'realmente / verdadero',cat:'Adjetivos',lvl:'HSK1'},
+  {id:257,c:'什么',p:'shénme',m:'¿qué?',cat:'Preguntas',lvl:'HSK1'},
+  {id:258,c:'哪',p:'nǎ',m:'¿cuál?',cat:'Preguntas',lvl:'HSK1'},
+  {id:259,c:'哪里',p:'nǎlǐ',m:'¿dónde?',cat:'Preguntas',lvl:'HSK1'},
+  {id:260,c:'谁',p:'shuí',m:'¿quién?',cat:'Preguntas',lvl:'HSK1'},
+  {id:261,c:'几',p:'jǐ',m:'¿cuántos? (pequeño)',cat:'Preguntas',lvl:'HSK1'},
+  {id:262,c:'多少',p:'duōshao',m:'¿cuánto?',cat:'Preguntas',lvl:'HSK1'},
+  {id:263,c:'怎么',p:'zěnme',m:'¿cómo?',cat:'Preguntas',lvl:'HSK1'},
+  {id:264,c:'为什么',p:'wèi shénme',m:'¿por qué?',cat:'Preguntas',lvl:'HSK1'},
+  {id:265,c:'什么时候',p:'shénme shíhou',m:'¿cuándo?',cat:'Preguntas',lvl:'HSK1'},
+  {id:266,c:'吗',p:'ma',m:'partícula de pregunta sí/no',cat:'Partículas',lvl:'HSK1'},
+  {id:267,c:'呢',p:'ne',m:'partícula elíptica (¿y tú?)',cat:'Partículas',lvl:'HSK1'},
+  {id:268,c:'的',p:'de',m:'partícula posesiva / modificadora',cat:'Partículas',lvl:'HSK1'},
+  {id:269,c:'了',p:'le',m:'acción completada / cambio',cat:'Partículas',lvl:'HSK1'},
+  {id:270,c:'不',p:'bù',m:'no (negación)',cat:'Partículas',lvl:'HSK1'},
+  {id:271,c:'没有',p:'méiyǒu',m:'no tener / no haber',cat:'Partículas',lvl:'HSK1'},
+  {id:272,c:'也',p:'yě',m:'también',cat:'Partículas',lvl:'HSK1'},
+  {id:273,c:'都',p:'dōu',m:'todos / todo',cat:'Partículas',lvl:'HSK1'},
+  {id:274,c:'很',p:'hěn',m:'muy',cat:'Partículas',lvl:'HSK1'},
+  {id:275,c:'太',p:'tài',m:'demasiado',cat:'Partículas',lvl:'HSK1'},
+  {id:276,c:'非常',p:'fēicháng',m:'muy / extremadamente',cat:'Partículas',lvl:'HSK1'},
+  {id:277,c:'吧',p:'ba',m:'partícula de sugerencia',cat:'Partículas',lvl:'HSK1'},
+  {id:278,c:'和',p:'hé',m:'y (para conectar)',cat:'Partículas',lvl:'HSK1'},
+  {id:279,c:'还是',p:'háishi',m:'o (en pregunta)',cat:'Partículas',lvl:'HSK1'},
+  {id:280,c:'但是',p:'dànshì',m:'pero / sin embargo',cat:'Partículas',lvl:'HSK1'},
+  {id:281,c:'因为',p:'yīnwèi',m:'porque',cat:'Partículas',lvl:'HSK2'},
+  {id:282,c:'所以',p:'suǒyǐ',m:'por eso / así que',cat:'Partículas',lvl:'HSK2'},
+  {id:283,c:'虽然',p:'suīrán',m:'aunque',cat:'Partículas',lvl:'HSK2'},
+  {id:284,c:'如果',p:'rúguǒ',m:'si (condicional)',cat:'Partículas',lvl:'HSK2'},
+  {id:285,c:'比',p:'bǐ',m:'comparar / que (comparación)',cat:'Partículas',lvl:'HSK2'},
+  {id:286,c:'从',p:'cóng',m:'desde / de',cat:'Partículas',lvl:'HSK2'},
+  {id:287,c:'正在',p:'zhèngzài',m:'estar en proceso de',cat:'Partículas',lvl:'HSK1'},
+  {id:288,c:'已经',p:'yǐjīng',m:'ya (ya ha ocurrido)',cat:'Partículas',lvl:'HSK2'},
+  {id:289,c:'还',p:'hái',m:'todavía / aún / también',cat:'Partículas',lvl:'HSK2'},
+  {id:290,c:'又',p:'yòu',m:'otra vez / de nuevo',cat:'Partículas',lvl:'HSK2'},
+  {id:291,c:'再',p:'zài',m:'de nuevo / otra vez',cat:'Partículas',lvl:'HSK1'},
+  {id:292,c:'只',p:'zhǐ',m:'solo / solamente',cat:'Partículas',lvl:'HSK2'},
+  {id:293,c:'最',p:'zuì',m:'el más (superlativo)',cat:'Partículas',lvl:'HSK2'},
+  {id:294,c:'一边',p:'yībiān',m:'mientras / al mismo tiempo',cat:'Partículas',lvl:'HSK2'},
+  {id:295,c:'一起',p:'yīqǐ',m:'juntos',cat:'Partículas',lvl:'HSK2'},
+  {id:296,c:'一点儿',p:'yīdiǎnr',m:'un poco',cat:'Partículas',lvl:'HSK1'},
+  {id:297,c:'电话',p:'diànhuà',m:'teléfono',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:298,c:'电视',p:'diànshì',m:'televisión',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:299,c:'电脑',p:'diànnǎo',m:'ordenador',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:300,c:'书',p:'shū',m:'libro',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:301,c:'钱',p:'qián',m:'dinero',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:302,c:'杯子',p:'bēizi',m:'taza / vaso',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:303,c:'桌子',p:'zhuōzi',m:'mesa',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:304,c:'椅子',p:'yǐzi',m:'silla',cat:'Objetos cotidianos',lvl:'HSK1'},
+  {id:305,c:'手机',p:'shǒujī',m:'móvil / smartphone',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:306,c:'护照',p:'hùzhào',m:'pasaporte',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:307,c:'票',p:'piào',m:'billete / entrada',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:308,c:'地图',p:'dìtú',m:'mapa',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:309,c:'眼镜',p:'yǎnjìng',m:'gafas',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:310,c:'药',p:'yào',m:'medicina',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:311,c:'照片',p:'zhàopiàn',m:'foto',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:312,c:'音乐',p:'yīnyuè',m:'música',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:313,c:'电影',p:'diànyǐng',m:'película',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:314,c:'天气',p:'tiānqì',m:'tiempo meteorológico',cat:'Naturaleza',lvl:'HSK2'},
+  {id:315,c:'雨',p:'yǔ',m:'lluvia',cat:'Naturaleza',lvl:'HSK2'},
+  {id:316,c:'雪',p:'xuě',m:'nieve',cat:'Naturaleza',lvl:'HSK2'},
+  {id:317,c:'风',p:'fēng',m:'viento',cat:'Naturaleza',lvl:'HSK2'},
+  {id:318,c:'太阳',p:'tàiyáng',m:'sol',cat:'Naturaleza',lvl:'HSK2'},
+  {id:319,c:'冰',p:'bīng',m:'hielo',cat:'Naturaleza',lvl:'HSK2'},
+  {id:320,c:'喝',p:'hē',m:'beber',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:321,c:'吃',p:'chī',m:'comer',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:322,c:'来',p:'lái',m:'venir',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:323,c:'去',p:'qù',m:'ir',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:324,c:'看',p:'kàn',m:'mirar / leer',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:325,c:'说',p:'shuō',m:'hablar / decir',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:326,c:'听',p:'tīng',m:'escuchar',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:327,c:'叫',p:'jiào',m:'llamarse / gritar',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:328,c:'是',p:'shì',m:'ser / es',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:329,c:'有',p:'yǒu',m:'tener / haber',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:330,c:'买',p:'mǎi',m:'comprar',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:331,c:'开',p:'kāi',m:'abrir / conducir',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:332,c:'写',p:'xiě',m:'escribir',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:333,c:'坐',p:'zuò',m:'sentarse / tomar (transporte)',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:334,c:'做',p:'zuò',m:'hacer',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:335,c:'爱',p:'ài',m:'amar / querer',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:336,c:'回',p:'huí',m:'volver / regresar',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:337,c:'会',p:'huì',m:'saber hacer algo',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:338,c:'见',p:'jiàn',m:'ver / quedar con alguien',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:339,c:'请',p:'qǐng',m:'invitar / por favor',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:340,c:'到',p:'dào',m:'llegar / hasta',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:341,c:'在',p:'zài',m:'estar en / gerundio',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:342,c:'认识',p:'rènshi',m:'conocer / reconocer',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:343,c:'知道',p:'zhīdào',m:'saber / conocer',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:344,c:'想',p:'xiǎng',m:'querer / pensar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:345,c:'喜欢',p:'xǐhuan',m:'gustar / querer',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:346,c:'需要',p:'xūyào',m:'necesitar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:347,c:'能',p:'néng',m:'poder (capacidad)',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:348,c:'可以',p:'kěyǐ',m:'poder (permiso)',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:349,c:'应该',p:'yīnggāi',m:'deber / tener que',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:350,c:'帮助',p:'bāngzhù',m:'ayudar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:351,c:'等',p:'děng',m:'esperar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:352,c:'告诉',p:'gàosu',m:'decir / informar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:353,c:'找',p:'zhǎo',m:'buscar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:354,c:'运动',p:'yùndòng',m:'hacer deporte',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:355,c:'游泳',p:'yóuyǒng',m:'nadar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:356,c:'跑步',p:'pǎo bù',m:'correr',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:357,c:'唱歌',p:'chàng gē',m:'cantar',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:358,c:'跳舞',p:'tiào wǔ',m:'bailar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:359,c:'睡觉',p:'shuì jiào',m:'dormir',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:360,c:'起床',p:'qǐ chuáng',m:'levantarse',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:361,c:'洗澡',p:'xǐ zǎo',m:'ducharse / bañarse',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:362,c:'刷牙',p:'shuā yá',m:'cepillarse los dientes',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:363,c:'做饭',p:'zuò fàn',m:'cocinar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:364,c:'走路',p:'zǒu lù',m:'andar / caminar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:365,c:'骑',p:'qí',m:'montar (bici / caballo)',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:366,c:'画',p:'huà',m:'dibujar / pintar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:367,c:'懂',p:'dǒng',m:'entender / comprender',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:368,c:'读',p:'dú',m:'leer / estudiar',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:369,c:'上课',p:'shàng kè',m:'ir a clase / empezar clase',cat:'Verbos comunes',lvl:'HSK1'},
+  {id:370,c:'下课',p:'xià kè',m:'terminar la clase',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:371,c:'休息',p:'xiūxi',m:'descansar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:372,c:'祝',p:'zhù',m:'desear',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:373,c:'踢足球',p:'tī zúqiú',m:'jugar al fútbol',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:374,c:'打篮球',p:'dǎ lánqiú',m:'jugar al baloncesto',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:375,c:'听说',p:'tīng shuō',m:'haber oído / se dice que',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:376,c:'出生',p:'chūshēng',m:'nacer',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:377,c:'猜',p:'cāi',m:'adivinar',cat:'Verbos comunes',lvl:'HSK3'},
+  {id:378,c:'旅游',p:'lǚyóu',m:'viajar / turismo',cat:'Otros',lvl:'HSK2'},
+  {id:379,c:'故事',p:'gùshi',m:'historia / cuento',cat:'Otros',lvl:'HSK2'},
+  {id:380,c:'爱好',p:'àihào',m:'afición / hobby',cat:'Otros',lvl:'HSK1'},
+  {id:381,c:'东西',p:'dōngxi',m:'cosa / cosas',cat:'Otros',lvl:'HSK1'},
+  {id:382,c:'生活',p:'shēnghuó',m:'vida / vivir',cat:'Otros',lvl:'HSK2'},
+  {id:383,c:'生肖',p:'shēngxiào',m:'horóscopo chino',cat:'Otros',lvl:'HSK2'},
+  {id:384,c:'龙',p:'lóng',m:'dragón chino',cat:'Otros',lvl:'HSK2'},
+  {id:385,c:'国籍',p:'guójí',m:'nacionalidad',cat:'Otros',lvl:'HSK3'},
+  {id:386,c:'姓',p:'xìng',m:'apellidarse / apellido',cat:'Otros',lvl:'HSK1'},
+  {id:387,c:'姓名',p:'xìngmíng',m:'nombre completo',cat:'Otros',lvl:'HSK2'},
+  {id:388,c:'名字',p:'míngzi',m:'nombre',cat:'Otros',lvl:'HSK1'},
+  {id:389,c:'性别',p:'xìngbié',m:'género',cat:'Otros',lvl:'HSK2'},
+  {id:390,c:'年龄',p:'niánlíng',m:'edad',cat:'Otros',lvl:'HSK2'},
+  {id:391,c:'午觉',p:'wǔjiào',m:'siesta',cat:'Otros',lvl:'HSK2'},
+  {id:392,c:'差',p:'chà',m:'faltar / diferencia',cat:'Otros',lvl:'HSK2'},
+
+  {id:500,c:'裙子',p:'qúnzi',m:'falda',cat:'Ropa',lvl:'HSK2'},
+  {id:501,c:'外套',p:'wàitào',m:'abrigo / chaqueta exterior',cat:'Ropa',lvl:'HSK2'},
+  {id:502,c:'毛衣',p:'máoyī',m:'jersey / suéter',cat:'Ropa',lvl:'HSK2'},
+  {id:503,c:'牛仔裤',p:'niúzǎikù',m:'vaqueros / jeans',cat:'Ropa',lvl:'HSK2'},
+  {id:504,c:'衬衫',p:'chènshān',m:'camisa',cat:'Ropa',lvl:'HSK2'},
+  {id:505,c:'T恤衫',p:'T xùshān',m:'camiseta',cat:'Ropa',lvl:'HSK2'},
+  {id:506,c:'运动鞋',p:'yùndòngxié',m:'zapatillas deportivas',cat:'Ropa',lvl:'HSK2'},
+  {id:507,c:'校服',p:'xiàofú',m:'uniforme escolar',cat:'Ropa',lvl:'HSK2'},
+  {id:508,c:'汗衫',p:'hànshān',m:'camiseta de tirantes',cat:'Ropa',lvl:'HSK2'},
+  {id:509,c:'短裤',p:'duǎnkù',m:'pantalón corto',cat:'Ropa',lvl:'HSK2'},
+  {id:510,c:'袜子',p:'wàzi',m:'calcetín',cat:'Ropa',lvl:'HSK2'},
+  {id:511,c:'袖子',p:'xiùzi',m:'manga',cat:'Ropa',lvl:'HSK2'},
+  {id:512,c:'西装',p:'xīzhuāng',m:'traje (conjunto)',cat:'Ropa',lvl:'HSK2'},
+  {id:513,c:'粉红色',p:'fěnhóngsè',m:'rosa',cat:'Colores',lvl:'HSK2'},
+  {id:514,c:'橙色',p:'chéngsè',m:'naranja',cat:'Colores',lvl:'HSK2'},
+  {id:515,c:'紫色',p:'zǐsè',m:'morado / violeta',cat:'Colores',lvl:'HSK2'},
+  {id:516,c:'灰色',p:'huīsè',m:'gris',cat:'Colores',lvl:'HSK2'},
+  {id:517,c:'棕色',p:'zōngsè',m:'marrón',cat:'Colores',lvl:'HSK2'},
+  {id:518,c:'咖啡色',p:'kāfēisè',m:'marrón café',cat:'Colores',lvl:'HSK2'},
+  {id:519,c:'穿',p:'chuān',m:'llevar puesto / vestir',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:520,c:'觉得',p:'juéde',m:'creer / opinar / sentir',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:521,c:'用',p:'yòng',m:'usar / utilizar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:522,c:'付',p:'fù',m:'pagar',cat:'Verbos comunes',lvl:'HSK2'},
+  {id:523,c:'多少钱',p:'duōshao qián',m:'¿cuánto cuesta?',cat:'Preguntas',lvl:'HSK1'},
+  {id:524,c:'有点儿',p:'yǒudiǎnr',m:'un poco (con adj negativo)',cat:'Partículas',lvl:'HSK2'},
+  {id:525,c:'就',p:'jiù',m:'entonces / precisamente',cat:'Partículas',lvl:'HSK2'},
+  {id:526,c:'刷卡',p:'shuā kǎ',m:'pagar con tarjeta',cat:'Otros',lvl:'HSK2'},
+  {id:527,c:'付现金',p:'fù xiànjīn',m:'pagar en efectivo',cat:'Otros',lvl:'HSK2'},
+  {id:528,c:'微信',p:'Wēixìn',m:'WeChat',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:529,c:'支付宝',p:'Zhīfùbǎo',m:'Alipay',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:530,c:'银行卡',p:'yínháng kǎ',m:'tarjeta bancaria',cat:'Objetos cotidianos',lvl:'HSK2'},
+  {id:531,c:'块',p:'kuài',m:'yuan (unidad monetaria)',cat:'Números',lvl:'HSK1'},
+  {id:532,c:'套',p:'tào',m:'clasificador para conjuntos',cat:'Partículas',lvl:'HSK2'},
+  {id:533,c:'副',p:'fù',m:'clasificador para pares (gafas/guantes)',cat:'Partículas',lvl:'HSK2'},
+  {id:534,c:'架',p:'jià',m:'clasificador para aviones',cat:'Partículas',lvl:'HSK2'},
+  {id:535,c:'春节',p:'Chūnjié',m:'Año Nuevo Chino',cat:'Tiempo',lvl:'HSK2'},
+  {id:536,c:'中秋节',p:'Zhōngqiū jié',m:'Festival del Medio Otoño',cat:'Tiempo',lvl:'HSK2'},
+  {id:537,c:'端午节',p:'Duānwǔ jié',m:'Festival del Bote del Dragón',cat:'Tiempo',lvl:'HSK2'},
+  {id:538,c:'元宵节',p:'Yuánxiāo jié',m:'Festival de los Faroles',cat:'Tiempo',lvl:'HSK2'},
+  {id:539,c:'这些',p:'zhèxiē',m:'estos / estas (plural)',cat:'Pronombres',lvl:'HSK2'},
+  {id:540,c:'那些',p:'nàxiē',m:'esos / esas (plural)',cat:'Pronombres',lvl:'HSK2'},
+  {id:541,c:'那个',p:'nàge',m:'ese / esa (con clasificador)',cat:'Pronombres',lvl:'HSK1'},
+  {id:542,c:'好看',p:'hǎokàn',m:'bonito / guapo / interesante',cat:'Adjetivos',lvl:'HSK1'},
+  {id:543,c:'好喝',p:'hǎohē',m:'rico (bebida)',cat:'Adjetivos',lvl:'HSK2'},
+  {id:544,c:'对吗',p:'duì ma',m:'¿verdad? / ¿correcto?',cat:'Preguntas',lvl:'HSK1'},
+  {id:545,c:'图书馆',p:'túshūguǎn',m:'biblioteca',cat:'Lugar',lvl:'HSK2'},
+  {id:546,c:'餐厅',p:'cāntīng',m:'restaurante',cat:'Lugar',lvl:'HSK2'},
+  {id:547,c:'卖',p:'mài',m:'vender',cat:'Verbos comunes',lvl:'HSK2'},
+];
+
+let nextId = 400;
+
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let filterLvl = 'all', filterCats = [];
+let vocabLvl = 'all', vocabPage = 0, searchQ = '';
+const PAGE = 20;
+let editId = null;
+
+// game
+let gWords = [], gIdx = 0, gOk = 0, gBad = 0;
+let fcQueue = [], fcReview = [], fcFlipped = false;
+let mtSel = null, mtMatched = 0, mtRound = 0, mtTotal = 0, mtErrors = 0, mtRoundWords = [];
+let memCards = [], memFlipped = [], memMatched = 0, memFlips = 0, memLocked = false, memPairs = 0;
+let wrMode = 'char', wrCurMode = 'char';
+let grQs = [], grIdx = 0, grOk = 0, grBad = 0;
+let clQs = [], clIdx = 0, clOk = 0, clBad = 0, clMode = 'quiz';
+let clbSents = [], clbIdx = 0, clbOk = 0, clbBad = 0, clbSel = [];
+
+// ═══════════════════════════════════════════════════════
+// GRAMMAR DATA
+// ═══════════════════════════════════════════════════════
+const grammarData = [
+  {pattern:'A 是 B',name:'Verbo 是 (shì)',
+   desc:'Indica identidad. Se niega con 不是.',
+   ex:[{cn:'我是学生。',py:'Wǒ shì xuésheng.',es:'Soy estudiante.'},
+       {cn:'他不是老师。',py:'Tā bú shì lǎoshī.',es:'Él no es profesor.'}]},
+  {pattern:'A 有 B',name:'Verbo 有 (yǒu)',
+   desc:'Indica posesión o existencia. Se niega con 没有, nunca 不有.',
+   ex:[{cn:'我有一个哥哥。',py:'Wǒ yǒu yí gè gēge.',es:'Tengo un hermano mayor.'},
+       {cn:'这里没有水。',py:'Zhèlǐ méiyǒu shuǐ.',es:'Aquí no hay agua.'}]},
+  {pattern:'句子 + 吗？',name:'Pregunta con 吗 (ma)',
+   desc:'Convierte cualquier frase en pregunta de sí/no añadiendo 吗 al final.',
+   ex:[{cn:'你是老师吗？',py:'Nǐ shì lǎoshī ma?',es:'¿Eres profesor?'},
+       {cn:'你喝茶吗？',py:'Nǐ hē chá ma?',es:'¿Bebes té?'}]},
+  {pattern:'不 / 没',name:'Negación con 不 y 没',
+   desc:'不 niega presente y futuro. 没 niega 有 y acciones ya ocurridas.',
+   ex:[{cn:'我不喜欢冷天。',py:'Wǒ bù xǐhuan lěng tiān.',es:'No me gusta el frío.'},
+       {cn:'我没去学校。',py:'Wǒ méi qù xuéxiào.',es:'No fui al colegio.'}]},
+  {pattern:'A 比 B + adj',name:'Comparación con 比 (bǐ)',
+   desc:'Para comparar dos cosas. "A es más [adj] que B".',
+   ex:[{cn:'苹果比香蕉贵。',py:'Píngguǒ bǐ xiāngjiāo guì.',es:'Las manzanas son más caras.'},
+       {cn:'汉语比英语难。',py:'Hànyǔ bǐ Yīngyǔ nán.',es:'El chino es más difícil que el inglés.'}]},
+  {pattern:'动词 + 了',name:'Partícula 了 (le)',
+   desc:'Indica que una acción se completó o que algo cambió.',
+   ex:[{cn:'我吃了。',py:'Wǒ chī le.',es:'Ya comí.'},
+       {cn:'他来了！',py:'Tā lái le!',es:'¡Ya vino!'}]},
+  {pattern:'因为…所以',name:'Causa y efecto',
+   desc:'Expresa causa y efecto. "Porque A, por eso B".',
+   ex:[{cn:'因为天气热，所以我喝水。',py:'Yīnwèi tiānqì rè, suǒyǐ wǒ hē shuǐ.',es:'Porque hace calor, bebo agua.'}]},
+  {pattern:'这/那 + 些/个',name:'Demostrativos 这/那',
+   desc:'这 (este/esta), 那 (ese/esa). Con 些 hacemos el plural: 这些 (estos), 那些 (esos). Con clasificador: 这个, 那个.',
+   ex:[{cn:'这些书太好看了。',py:'Zhèxiē shū tài hǎokàn le.',es:'Estos libros son muy interesantes.'},
+       {cn:'那个杯子真漂亮。',py:'Nàge bēizi zhēn piàoliang.',es:'Ese vaso es muy bonito.'}]},
+  {pattern:'sujeto + 有点儿 + adj',name:'有点儿 (un poco)',
+   desc:'有点儿 + adjetivo indica que algo es ligeramente negativo o insatisfactorio.',
+   ex:[{cn:'这件衣服有点儿大。',py:'Zhè jiàn yīfu yǒudiǎnr dà.',es:'Esta ropa es un poco grande.'},
+       {cn:'我觉得有点儿贵。',py:'Wǒ juéde yǒudiǎnr guì.',es:'Creo que es un poco caro.'}]},
+  {pattern:'(sujeto) + 就 + verbo',name:'就 (entonces / precisamente)',
+   desc:'就 indica una conclusión o decisión basada en algo dicho antes. También confirma.',
+   ex:[{cn:'你喜欢就买吧。',py:'Nǐ xǐhuan jiù mǎi ba.',es:'Si te gusta, cómpralo.'},
+       {cn:'西瓜贵，我们就买苹果。',py:'Xīguā guì, wǒmen jiù mǎi píngguǒ.',es:'La sandía es cara, entonces compramos manzanas.'}]},
+  {pattern:'A + 的',name:'Construcción con 的',
+   desc:'的 después de pronombre, sustantivo o adjetivo hace referencia a algo ya conocido o mencionado.',
+   ex:[{cn:'这条裤子不是我的。',py:'Zhè tiáo kùzi bú shì wǒ de.',es:'Este pantalón no es mío.'},
+       {cn:'你喜欢黑色的还是红色的？',py:'Nǐ xǐhuan hēisè de háishi hóngsè de?',es:'¿Te gusta el negro o el rojo?'}]},
+  {pattern:'还 (hái)',name:'还 = además / también',
+   desc:'还 (hái) conecta dos acciones o propiedades, equivale a "además" o "también".',
+   ex:[{cn:'我有一个哥哥，还有一个妹妹。',py:'Wǒ yǒu yí gè gēge, hái yǒu yí gè mèimei.',es:'Tengo un hermano mayor y además una hermana pequeña.'},
+       {cn:'我们要买可乐，还要买什么？',py:'Wǒmen yào mǎi kělè, hái yào mǎi shénme?',es:'Vamos a comprar cola, ¿qué más compramos?'}]},
+  {pattern:'能 / 可以',name:'Poder: 能 y 可以',
+   desc:'能 indica capacidad física. 可以 indica permiso.',
+   ex:[{cn:'你能游泳吗？',py:'Nǐ néng yóuyǒng ma?',es:'¿Sabes nadar?'},
+       {cn:'这里可以拍照吗？',py:'Zhèlǐ kěyǐ pāizhào ma?',es:'¿Se puede hacer fotos aquí?'}]}
+];
+
+const grammarQs = [
+  {s:'我___学生。',opts:['是','有','在','吗'],ok:'是',hint:'Identidad: "ser"',exp:'是 (shì) indica identidad.',tr:'Yo soy estudiante.'},
+  {s:'她___一个妹妹。',opts:['是','有','的','不'],ok:'有',hint:'"tener"',exp:'有 (yǒu) indica posesión.',tr:'Ella tiene una hermana menor.'},
+  {s:'你喜欢中文___？',opts:['吗','的','了','呢'],ok:'吗',hint:'Pregunta sí/no',exp:'吗 convierte la frase en pregunta sí/no.',tr:'¿Te gusta el chino?'},
+  {s:'我___去学校，我在家。',opts:['没','不','很','都'],ok:'没',hint:'Negación de acción pasada',exp:'没 niega acciones ya ocurridas.',tr:'No fui al colegio, estoy en casa.'},
+  {s:'苹果___香蕉贵。',opts:['比','和','的','很'],ok:'比',hint:'Comparación',exp:'比 se usa para comparar: A 比 B + adj.',tr:'Las manzanas son más caras que los plátanos.'},
+  {s:'我吃___饭了。',opts:['了','的','吗','呢'],ok:'了',hint:'Acción completada',exp:'了 indica acción completada.',tr:'Ya he comido.'},
+  {s:'你___帮我吗？',opts:['能','有','是','比'],ok:'能',hint:'Capacidad física',exp:'能 indica capacidad o habilidad.',tr:'¿Puedes ayudarme?'},
+  {s:'这里___拍照。',opts:['可以','是','有','吗'],ok:'可以',hint:'Permiso',exp:'可以 indica permiso.',tr:'Aquí se puede hacer fotos.'},
+  {s:'书在桌子___。',opts:['上','去','来','里'],ok:'上',hint:'Encima de la mesa',exp:'上 (shàng) = encima de.',tr:'El libro está encima de la mesa.'},
+  {s:'___天气热，___我喝水。',opts:['因为...所以','虽然...但是','如果...就','和...也'],ok:'因为...所以',hint:'Causa y efecto',exp:'因为…所以 expresa causa y consecuencia.',tr:'Porque hace calor, bebo agua.'},
+  {s:'你___名字？',opts:['叫什么','是哪','有多少','在哪儿'],ok:'叫什么',hint:'Preguntar el nombre',exp:'叫什么 = ¿cómo te llamas?',tr:'¿Cómo te llamas?'},
+  {s:'我们___一起去吧！',opts:['应该','吃','说','写'],ok:'应该',hint:'"deberíamos"',exp:'应该 = deber / tener que.',tr:'¡Deberíamos ir juntos!'},
+  {s:'中文比英文___。',opts:['难','贵','大','喝'],ok:'难',hint:'Más difícil',exp:'En comparaciones con 比 el adjetivo va al final.',tr:'El chino es más difícil que el inglés.'},
+  {s:'这件衣服有点儿___。',opts:['大','吃','来','吗'],ok:'大',hint:'Un poco grande',exp:'有点儿 + adjetivo = un poco + adj.',tr:'Esta ropa es un poco grande.'},
+  {s:'你喜欢穿什么颜色___衣服？',opts:['的','了','吗','呢'],ok:'的',hint:'Partícula modificadora',exp:'的 conecta adjetivo/color con sustantivo.',tr:'¿De qué color te gusta llevar la ropa?'},
+];
+
+// CLASSIFIERS
+const classifiers = [
+  {char:'个',py:'gè',desc:'uso general (personas, cosas)',color:'#FF6B35',bg:'#FFF0EB',
+   rule:'El más versátil. Personas y muchos objetos sin clasificador propio.',
+   nouns:[{c:'人',e:'🧑',es:'persona'},{c:'学生',e:'🎓',es:'estudiante'},{c:'苹果',e:'🍎',es:'manzana'},{c:'问题',e:'❓',es:'problema'},{c:'朋友',e:'🤝',es:'amigo'}]},
+  {char:'本',py:'běn',desc:'libros y objetos encuadernados',color:'#1D4ED8',bg:'#EFF6FF',
+   rule:'Libros, revistas, cuadernos y objetos encuadernados.',
+   nouns:[{c:'书',e:'📖',es:'libro'},{c:'杂志',e:'📰',es:'revista'},{c:'词典',e:'📚',es:'diccionario'},{c:'护照',e:'🛂',es:'pasaporte'}]},
+  {char:'张',py:'zhāng',desc:'objetos planos (papel, mesas, fotos)',color:'#0891B2',bg:'#ECFEFF',
+   rule:'Para objetos planos o con superficie plana: papel, mesas, fotos, mapas.',
+   nouns:[{c:'纸',e:'📄',es:'papel'},{c:'桌子',e:'🪑',es:'mesa'},{c:'照片',e:'📸',es:'foto'},{c:'地图',e:'🗺️',es:'mapa'},{c:'票',e:'🎫',es:'billete'}]},
+  {char:'条',py:'tiáo',desc:'objetos largos y flexibles',color:'#059669',bg:'#ECFDF5',
+   rule:'Cosas largas o flexibles: ríos, calles, pantalones, peces.',
+   nouns:[{c:'鱼',e:'🐟',es:'pez'},{c:'裤子',e:'👖',es:'pantalón'},{c:'路',e:'🛣️',es:'calle'},{c:'河',e:'🏞️',es:'río'}]},
+  {char:'只',py:'zhī',desc:'animales pequeños y pares',color:'#D97706',bg:'#FFFBEB',
+   rule:'Animales pequeños (gatos, perros, pájaros) y también manos, ojos.',
+   nouns:[{c:'猫',e:'🐱',es:'gato'},{c:'狗',e:'🐶',es:'perro'},{c:'鸟',e:'🐦',es:'pájaro'},{c:'手',e:'✋',es:'mano'},{c:'眼睛',e:'👁️',es:'ojo'}]},
+  {char:'杯',py:'bēi',desc:'bebidas en vaso o taza',color:'#7C3AED',bg:'#F5F3FF',
+   rule:'Para bebidas servidas en un recipiente: taza de té, vaso de agua.',
+   nouns:[{c:'茶',e:'🍵',es:'té'},{c:'水',e:'💧',es:'agua'},{c:'咖啡',e:'☕',es:'café'},{c:'牛奶',e:'🥛',es:'leche'}]},
+  {char:'碗',py:'wǎn',desc:'comida en cuenco',color:'#BE185D',bg:'#FDF2F8',
+   rule:'Para comida servida en cuenco: arroz, sopa, fideos.',
+   nouns:[{c:'饭',e:'🍚',es:'arroz'},{c:'面条',e:'🍜',es:'fideos'},{c:'汤',e:'🍲',es:'sopa'}]},
+  {char:'件',py:'jiàn',desc:'ropa (parte superior) y asuntos',color:'#0891B2',bg:'#ECFEFF',
+   rule:'Prendas superiores (camiseta, chaqueta) y también asuntos o eventos.',
+   nouns:[{c:'衣服',e:'👕',es:'ropa'},{c:'事',e:'📋',es:'asunto'},{c:'行李',e:'🧳',es:'equipaje'}]},
+  {char:'双',py:'shuāng',desc:'pares (zapatos, palillos)',color:'#059669',bg:'#ECFDF5',
+   rule:'Para cosas que vienen en pares: zapatos, calcetines, guantes, palillos.',
+   nouns:[{c:'鞋',e:'👟',es:'zapatos'},{c:'筷子',e:'🥢',es:'palillos'},{c:'手套',e:'🧤',es:'guantes'}]},
+  {char:'辆',py:'liàng',desc:'vehículos con ruedas',color:'#1D4ED8',bg:'#EFF6FF',
+   rule:'Para vehículos con ruedas: coches, bicicletas, autobuses.',
+   nouns:[{c:'汽车',e:'🚗',es:'coche'},{c:'自行车',e:'🚲',es:'bicicleta'},{c:'公共汽车',e:'🚌',es:'autobús'}]},
+  {char:'次',py:'cì',desc:'número de veces (frecuencia)',color:'#BE185D',bg:'#FDF2F8',
+   rule:'Para contar acciones repetidas: una vez, dos veces.',
+   nouns:[{c:'一次',e:'1️⃣',es:'una vez'},{c:'两次',e:'2️⃣',es:'dos veces'}]},
+  {char:'位',py:'wèi',desc:'personas (formal/respetuoso)',color:'#7C3AED',bg:'#F5F3FF',
+   rule:'Versión formal y respetuosa de 个 para personas.',
+   nouns:[{c:'老师',e:'👨‍🏫',es:'profesor'},{c:'医生',e:'👨‍⚕️',es:'médico'},{c:'客人',e:'🤝',es:'cliente'}]},
+  {char:'间',py:'jiān',desc:'habitaciones y espacios cerrados',color:'#059669',bg:'#ECFDF5',
+   rule:'Para habitaciones y establecimientos: dormitorio, cocina, aula.',
+   nouns:[{c:'房间',e:'🛏️',es:'habitación'},{c:'教室',e:'🏫',es:'aula'},{c:'厨房',e:'🍳',es:'cocina'}]},
+  {char:'些',py:'xiē',desc:'algunos / un poco de',color:'#0891B2',bg:'#ECFEFF',
+   rule:'Cantidad indefinida pequeña. Siempre con 一: 一些.',
+   nouns:[{c:'一些书',e:'📚',es:'algunos libros'},{c:'一些水',e:'💧',es:'un poco de agua'}]},
+];
+
+const clQsList = [];
+classifiers.forEach(cl => {
+  cl.nouns.forEach(noun => {
+    clQsList.push({
+      s:'一___ ' + noun.c, py:'yī ___ ' + noun.c, es:'una/un ' + noun.es,
+      ok:cl.char, okPy:cl.py, cl:cl,
+      exp:cl.char + ' (' + cl.py + '): ' + cl.rule,
+    });
+  });
+});
+
+const buildSents = [
+  {pieces:['我','买','了','两','本','书','。'],ok:['我','买','了','两','本','书','。'],py:'Wǒ mǎi le liǎng běn shū.',es:'Compré dos libros.',hint:'本 para libros 📖'},
+  {pieces:['她','有','三','只','猫','。'],ok:['她','有','三','只','猫','。'],py:'Tā yǒu sān zhī māo.',es:'Ella tiene tres gatos.',hint:'只 para animales pequeños 🐱'},
+  {pieces:['请','给','我','一','杯','茶','。'],ok:['请','给','我','一','杯','茶','。'],py:'Qǐng gěi wǒ yī bēi chá.',es:'Por favor dame una taza de té.',hint:'杯 para bebidas ☕'},
+  {pieces:['这','条','鱼','很','大','。'],ok:['这','条','鱼','很','大','。'],py:'Zhè tiáo yú hěn dà.',es:'Este pez es muy grande.',hint:'条 para peces 🐟'},
+  {pieces:['我们','班','有','二十','个','学生','。'],ok:['我们','班','有','二十','个','学生','。'],py:'Wǒmen bān yǒu èrshí gè xuésheng.',es:'En nuestra clase hay veinte estudiantes.',hint:'个 para personas 🎓'},
+  {pieces:['他','买','了','一','双','鞋','。'],ok:['他','买','了','一','双','鞋','。'],py:'Tā mǎi le yī shuāng xié.',es:'Él compró un par de zapatos.',hint:'双 para pares 👟'},
+  {pieces:['这','辆','汽车','很','贵','。'],ok:['这','辆','汽车','很','贵','。'],py:'Zhè liàng qìchē hěn guì.',es:'Este coche es muy caro.',hint:'辆 para vehículos 🚗'},
+  {pieces:['我','去','了','两','次','北京','。'],ok:['我','去','了','两','次','北京','。'],py:'Wǒ qù le liǎng cì Běijīng.',es:'Fui a Pekín dos veces.',hint:'次 para número de veces 🔁'},
+];
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function shuffle(a) {
+  var b = a.slice();
+  for (var i = b.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = b[i]; b[i] = b[j]; b[j] = t;
+  }
+  return b;
+}
+
+function el(id) { return document.getElementById(id); }
+function html(id, h) { el(id).innerHTML = h; }
+
+function normPy(s) {
+  return s.toLowerCase()
+    .replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e')
+    .replace(/[īíǐì]/g,'i').replace(/[ōóǒò]/g,'o')
+    .replace(/[ūúǔù]/g,'u').replace(/[ǖǘǚǜü]/g,'u')
+    .replace(/\s+/g,' ').trim();
+}
+
+function getFiltered() {
+  return vocab.filter(function(w) {
+    return (filterLvl === 'all' || w.lvl === filterLvl) &&
+           (filterCats.length === 0 || filterCats.indexOf(w.cat) !== -1);
+  });
+}
+
+function showResults(ok, total, type) {
+  var pct = Math.round(ok / total * 100);
+  var emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '💪';
+  var msg = pct >= 80 ? '¡Excelente!' : pct >= 50 ? '¡Buen trabajo!' : '¡Sigue practicando!';
+  return '<div class="results-box">' +
+    '<div class="results-emoji">' + emoji + '</div>' +
+    '<div class="results-title">' + msg + '</div>' +
+    '<div class="results-sub">Has completado la ronda</div>' +
+    '<div class="results-stats">' +
+      '<div><div class="res-stat-n" style="color:var(--green)">' + ok + '</div><div class="res-stat-l">Correctas</div></div>' +
+      '<div><div class="res-stat-n" style="color:var(--red)">' + (total - ok) + '</div><div class="res-stat-l">Errores</div></div>' +
+      '<div><div class="res-stat-n">' + pct + '%</div><div class="res-stat-l">Puntuación</div></div>' +
+    '</div>' +
+    '<div class="results-btns">' +
+      '<button class="btn btn-outline" onclick="exitGame()">← Inicio</button>' +
+      '<button class="btn btn-primary" onclick="startGame(\'' + type + '\')">Jugar de nuevo</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function scoreBox(n, l, color) {
+  return '<div class="score-box"><div class="score-n" style="color:' + (color || 'var(--orange)') + '">' + n + '</div><div class="score-l">' + l + '</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showScreen(name) {
+  ['home','vocab','grammar','game'].forEach(function(s) {
+    var sc = el('s-' + s);
+    sc.classList.toggle('active', s === name);
+    sc.style.display = '';
+    if (s === name) sc.style.display = 'flex';
+    else sc.style.display = 'none';
+  });
+  ['home','vocab','grammar'].forEach(function(n) {
+    var btn = el('nav-' + n);
+    if (btn) btn.classList.toggle('active', n === name);
+  });
+  if (name === 'vocab') renderVocabTable();
+  if (name === 'grammar') renderGrammarRef();
+}
+
+function exitGame() { showScreen('home'); }
+
+// ═══════════════════════════════════════════════════════
+// HOME INIT
+// ═══════════════════════════════════════════════════════
+function initHome() {
+  el('stat-words').textContent = vocab.length;
+  el('stat-hsk1').textContent = vocab.filter(function(w){return w.lvl==='HSK1';}).length;
+  el('stat-hsk2').textContent = vocab.filter(function(w){return w.lvl==='HSK2';}).length;
+
+  // Level filter
+  var lvls = ['all','HSK1','HSK2','HSK3'];
+  var lvlLabels = ['Todos','HSK 1','HSK 2','HSK 3'];
+  html('lvl-filter', lvls.map(function(l,i) {
+    return '<button class="pill' + (l===filterLvl?' on':'') + '" onclick="setLvl(\'' + l + '\')">' + lvlLabels[i] + '</button>';
+  }).join(''));
+
+  // Cat filter
+  var cats = CATS.filter(function(cat){ return vocab.some(function(w){return w.cat===cat;}); });
+  var allBtn = '<button class="pill' + (filterCats.length===0?' on-teal':'') + '" onclick="clearCats()">Todas</button>';
+  var catBtns = cats.map(function(cat) {
+    var on = filterCats.indexOf(cat) !== -1;
+    return '<button class="pill' + (on?' on-teal':'') + '" onclick="toggleCat(\'' + cat.replace(/'/g,"\\\'\'") + '\')">' + (CAT_EMOJI[cat]||'') + ' ' + cat + '</button>';
+  }).join('');
+  html('cat-filter', allBtn + catBtns);
+
+  // Games grid
+  var games = [
+    {id:'flashcard',icon:'🃏',title:'Flashcards',desc:'Voltea y recuerda. Dos direcciones.',color:'#FF6B35'},
+    {id:'multiple',icon:'🔘',title:'Opción múltiple',desc:'Elige el significado correcto.',color:'#1D4ED8'},
+    {id:'matching',icon:'🔗',title:'Emparejamiento',desc:'Une carácter, pinyin y significado.',color:'#7C3AED'},
+    {id:'memory',icon:'🧩',title:'Memoria',desc:'Encuentra las parejas ocultas.',color:'#0891B2'},
+    {id:'writing',icon:'✍️',title:'Escribe',desc:'Escribe el carácter o el pinyin.',color:'#059669'},
+    {id:'grammar',icon:'📝',title:'Gramática',desc:'Completa la frase correctamente.',color:'#D97706'},
+    {id:'classifier',icon:'🔢',title:'量词 Clasificadores',desc:'Aprende qué cuantificador usar.',color:'#BE185D'},
+  ];
+  var n = getFiltered().length;
+  html('games-grid', games.map(function(g) {
+    return '<div class="gcard" onclick="startGame(\'' + g.id + '\')">' +
+      '<div class="gcard-stripe" style="background:' + g.color + '"></div>' +
+      (g.id !== 'grammar' && g.id !== 'classifier' ? '<span class="gcard-count">' + n + '</span>' : '') +
+      '<span class="gcard-icon">' + g.icon + '</span>' +
+      '<div class="gcard-title">' + g.title + '</div>' +
+      '<div class="gcard-desc">' + g.desc + '</div>' +
+    '</div>';
+  }).join(''));
+}
+
+function setLvl(l) { filterLvl = l; initHome(); }
+function toggleCat(cat){var i=filterCats.indexOf(cat);if(i===-1)filterCats.push(cat);else filterCats.splice(i,1);initHome();}
+function clearCats(){filterCats=[];initHome();}
+
+// ═══════════════════════════════════════════════════════
+// VOCAB TABLE
+// ═══════════════════════════════════════════════════════
+function getVocabFiltered() {
+  var q = searchQ.toLowerCase();
+  return vocab.filter(function(w) {
+    return (vocabLvl === 'all' || w.lvl === vocabLvl) &&
+           (!q || w.c.includes(searchQ) || w.p.toLowerCase().includes(q) || w.m.toLowerCase().includes(q));
+  });
+}
+
+function renderVocabTable() {
+  var words = getVocabFiltered();
+  var total = words.length, pages = Math.ceil(total / PAGE) || 1;
+  var page = words.slice(vocabPage * PAGE, (vocabPage + 1) * PAGE);
+
+  var rows = page.map(function(w) {
+    var em = E(w.c) ? '<span style="font-size:16px">' + E(w.c) + '</span> ' : '';
+    return '<tr>' +
+      '<td class="cn-cell">' + em + w.c + '</td>' +
+      '<td class="py-cell">' + w.p + '</td>' +
+      '<td style="font-size:13px">' + w.m + '</td>' +
+      '<td><span class="cat-tag">' + (CAT_EMOJI[w.cat]||'') + '</span></td>' +
+      '<td><span class="hsk-tag ' + w.lvl.toLowerCase() + '">' + w.lvl + '</span></td>' +
+      '<td><button class="act-btn" onclick="openEdit(' + w.id + ')">✏️</button>' +
+          '<button class="act-btn" onclick="delWord(' + w.id + ')">🗑️</button></td>' +
+    '</tr>';
+  }).join('');
+  html('vtbody', rows || '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--ink3)">Sin resultados</td></tr>');
+
+  html('vpag', '<button onclick="vprev()">‹</button> Pág ' + (vocabPage+1) + '/' + pages + ' (' + total + ') <button onclick="vnext(' + (pages-1) + ')">›</button>');
+
+  // vocab level filter
+  var lvls = ['all','HSK1','HSK2','HSK3'];
+  var lls = ['Todos','HSK 1','HSK 2','HSK 3'];
+  html('vocab-lvl-filter', lvls.map(function(l,i){
+    return '<button class="pill btn-sm' + (l===vocabLvl?' on':'') + '" onclick="setVocabLvl(\'' + l + '\')">' + lls[i] + '</button>';
+  }).join(''));
+}
+
+function filterVocab() { searchQ = el('search-inp').value; vocabPage = 0; renderVocabTable(); }
+function setVocabLvl(l) { vocabLvl = l; vocabPage = 0; renderVocabTable(); }
+function vprev() { if (vocabPage > 0) { vocabPage--; renderVocabTable(); } }
+function vnext(max) { if (vocabPage < max) { vocabPage++; renderVocabTable(); } }
+
+function openAddModal() {
+  editId = null;
+  el('modal-h').textContent = 'Añadir palabra';
+  el('m-char').value = ''; el('m-py').value = ''; el('m-mean').value = '';
+  el('m-lvl').value = 'HSK2';
+  html('m-cat', CATS.map(function(c){return '<option>' + c + '</option>';}).join(''));
+  el('modal-bg').classList.add('open');
+}
+function openEdit(id) {
+  var w = vocab.find(function(x){return x.id===id;});
+  if (!w) return;
+  editId = id;
+  el('modal-h').textContent = 'Editar palabra';
+  el('m-char').value = w.c; el('m-py').value = w.p; el('m-mean').value = w.m;
+  el('m-lvl').value = w.lvl;
+  html('m-cat', CATS.map(function(c){return '<option' + (c===w.cat?' selected':'') + '>' + c + '</option>';}).join(''));
+  el('modal-bg').classList.add('open');
+}
+function closeModal() { el('modal-bg').classList.remove('open'); }
+function saveWord() {
+  var c = el('m-char').value.trim(), p = el('m-py').value.trim();
+  var m = el('m-mean').value.trim(), cat = el('m-cat').value, lvl = el('m-lvl').value;
+  if (!c || !p || !m) { alert('Rellena todos los campos.'); return; }
+  if (editId) {
+    var w = vocab.find(function(x){return x.id===editId;});
+    if (w) { w.c=c; w.p=p; w.m=m; w.cat=cat; w.lvl=lvl; }
+  } else {
+    vocab.push({id:nextId++,c:c,p:p,m:m,cat:cat,lvl:lvl});
+  }
+  closeModal(); renderVocabTable(); initHome();
+}
+function delWord(id) {
+  if (!confirm('¿Eliminar?')) return;
+  vocab = vocab.filter(function(x){return x.id!==id;});
+  renderVocabTable(); initHome();
+}
+
+// ═══════════════════════════════════════════════════════
+// GRAMMAR REFERENCE
+// ═══════════════════════════════════════════════════════
+function renderGrammarRef() {
+  var h = grammarData.map(function(p) {
+    return '<div class="grammar-card">' +
+      '<div class="gc-header">' +
+        '<div class="gc-pattern cn">' + p.pattern + '</div>' +
+        '<div class="gc-name">' + p.name + '</div>' +
+        '<div class="gc-desc">' + p.desc + '</div>' +
+      '</div>' +
+      '<div class="gc-examples">' +
+        p.ex.map(function(e) {
+          return '<div class="gc-ex">' +
+            '<div class="gc-cn cn">' + e.cn + '</div>' +
+            '<div class="gc-py">' + e.py + '</div>' +
+            '<div class="gc-es">' + e.es + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }).join('');
+  html('gr-ref-cards', h);
+}
+// START GAME
+// ═══════════════════════════════════════════════════════
+function startGame(type) {
+  var words = getFiltered();
+  if (type !== 'grammar' && type !== 'classifier' && words.length < 4) {
+    alert('Necesitas al menos 4 palabras. Cambia el filtro.'); return;
+  }
+  showScreen('game');
+  el('game-body').innerHTML = '';
+  var icons = {flashcard:'🃏',multiple:'🔘',matching:'🔗',memory:'🧩',writing:'✍️',grammar:'📝',classifier:'🔢'};
+  var titles = {flashcard:'Flashcards',multiple:'Opción múltiple',matching:'Emparejamiento',memory:'Memoria',writing:'Escribe el carácter',grammar:'Quiz de gramática',classifier:'Clasificadores 量词'};
+  el('g-title').textContent = (icons[type]||'') + ' ' + (titles[type]||type);
+  el('g-sub').textContent = type !== 'grammar' && type !== 'classifier' ? words.length + ' palabras seleccionadas' : '';
+  if (type === 'flashcard') initFlashcard(words);
+  else if (type === 'multiple') initMultiple(words);
+  else if (type === 'matching') initMatching(words);
+  else if (type === 'memory') initMemory(words);
+  else if (type === 'writing') initWriting(words);
+  else if (type === 'grammar') initGrammar();
+  else if (type === 'classifier') initClassifier();
+}
+
+// ═══════════════════════════════════════════════════════
+// FLASHCARD
+// ═══════════════════════════════════════════════════════
+function initFlashcard(words) {
+  fcQueue = shuffle(words); fcReview = [];
+  gOk = 0; gBad = 0; fcFlipped = false;
+  renderFC();
+}
+
+function renderFC() {
+  if (fcQueue.length === 0 && fcReview.length === 0) {
+    html('game-body', renderScores(gOk,gBad,'left') + showResults(gOk, gOk+gBad, 'flashcard'));
+    return;
+  }
+  if (fcQueue.length === 0) { fcQueue = shuffle(fcReview); fcReview = []; }
+  var w = fcQueue[0];
+  var total = gOk + gBad + fcQueue.length;
+  var pct = total ? Math.round((gOk+gBad)/total*100) : 0;
+  var reverse = Math.random() > 0.5;
+  var frontChar = reverse ? w.m : w.c;
+  var frontPy = reverse ? '' : w.p;
+  var frontEm = reverse ? (E(w.c)||'') : (E(w.c)||'');
+  var backMean = reverse ? w.c : w.m;
+  var backPy = reverse ? w.p : '';
+  var backEm = E(w.c) || '';
+
+  var h = renderScores(gOk, gBad, 'left') +
+    '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="fc-perspective" onclick="flipFC()">' +
+      '<div class="fc-card" id="fc-card">' +
+        '<div class="fc-face fc-front">' +
+          '<div class="fc-char cn" style="font-size:' + (reverse?'28px':'52px') + '">' + frontChar + '</div>' +
+          (frontPy ? '<div class="fc-py">' + frontPy + '</div>' : '') +
+          '<div class="fc-hint">Toca para voltear</div>' +
+        '</div>' +
+        '<div class="fc-face fc-back">' +
+          '<div class="fc-emoji">' + backEm + '</div>' +
+          '<div class="fc-meaning">' + backMean + '</div>' +
+          (backPy ? '<div class="fc-py" style="color:rgba(255,255,255,.75)">' + backPy + '</div>' : '') +
+          '<div class="fc-char cn" style="font-size:24px;color:rgba(255,255,255,.6)">' + (reverse ? w.c : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div id="fc-btns" style="display:none">' +
+      '<div class="fc-btns">' +
+        '<button class="fc-btn fc-no" onclick="fcAns(false)">😅 Repasar</button>' +
+        '<button class="fc-btn fc-yes" onclick="fcAns(true)">✅ Lo sé</button>' +
+      '</div>' +
+    '</div>';
+  el('game-body').innerHTML = h;
+  fcFlipped = false;
+}
+
+function flipFC() {
+  if (fcFlipped) return;
+  var card = el('fc-card'); if (!card) return;
+  card.style.transform = 'rotateY(180deg)';
+  el('fc-btns').style.display = '';
+  fcFlipped = true;
+}
+
+function fcAns(ok) {
+  var w = fcQueue.shift();
+  if (ok) gOk++; else { gBad++; fcReview.push(w); }
+  renderFC();
+}
+
+function renderScores(ok, bad, align) {
+  return '<div class="scores">' +
+    scoreBox(ok, 'Correctas', 'var(--green)') +
+    scoreBox(bad, 'Repasar', 'var(--red)') +
+    scoreBox(fcQueue ? fcQueue.length : 0, 'Quedan') +
+  '</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// MULTIPLE CHOICE
+// ═══════════════════════════════════════════════════════
+function initMultiple(words) {
+  gWords = shuffle(words); gIdx = 0; gOk = 0; gBad = 0;
+  renderMC();
+}
+
+function renderMC() {
+  if (gIdx >= Math.min(gWords.length, 20)) {
+    el('game-body').innerHTML = renderMCScores() + showResults(gOk, Math.min(gWords.length,20), 'multiple');
+    return;
+  }
+  var w = gWords[gIdx];
+  var reverse = Math.random() > 0.5;
+  var others = shuffle(gWords.filter(function(_,i){return i!==gIdx;})).slice(0,3);
+  var opts = shuffle([w].concat(others));
+  var pct = Math.round(gIdx / Math.min(gWords.length,20) * 100);
+  var em = E(w.c) || '';
+
+  var optsH = opts.map(function(opt) {
+    var label;
+    if (reverse) { label = opt.c; }
+    else { label = opt.m; }
+    return '<button class="mc-opt" onclick="mcAns(\'' + opt.id + '\',\'' + w.id + '\')">' +
+      '<div class="mc-opt-txt cn" style="font-size:' + (reverse?'18px':'13px') + '">' + label + '</div>' +
+    '</button>';
+  }).join('');
+
+  el('game-body').innerHTML =
+    renderMCScores() +
+    '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="mc-qbox">' +
+      '<div class="mc-char cn" style="font-size:' + (reverse?'18px':'60px') + '">' + (reverse ? w.m : w.c) + '</div>' +
+      (!reverse ? '<div class="mc-py">' + w.p + '</div>' : '') +
+      '<div class="mc-instr">' + (reverse ? 'Elige el carácter' : 'Elige el significado') + '</div>' +
+    '</div>' +
+    '<div class="mc-opts" id="mc-opts">' + optsH + '</div>';
+}
+
+function renderMCScores() {
+  return '<div class="scores">' +
+    scoreBox(gOk,'Correctas','var(--green)') +
+    scoreBox(gBad,'Errores','var(--red)') +
+    scoreBox(gIdx+1,'Pregunta') +
+  '</div>';
+}
+
+function mcAns(selId, okId) {
+  var ok = selId === okId;
+  var w = gWords[gIdx];
+  document.querySelectorAll('.mc-opt').forEach(function(b) { b.onclick = null; });
+  document.querySelectorAll('.mc-opt').forEach(function(b) {
+    var txt = b.querySelector('.mc-opt-txt');
+    if (!txt) return;
+    var isOk = (txt.textContent.trim() === w.m || txt.textContent.trim() === w.c);
+    if (ok && b === event.currentTarget) b.classList.add('ok');
+    else if (!ok && b === event.currentTarget) b.classList.add('no');
+    if (isOk) b.classList.add('ok');
+  });
+  if (ok) gOk++; else gBad++;
+  gIdx++;
+  setTimeout(renderMC, ok ? 600 : 1100);
+}
+
+// ═══════════════════════════════════════════════════════
+// MATCHING
+// ═══════════════════════════════════════════════════════
+function initMatching(words) {
+  gWords = shuffle(words); mtMatched = 0; mtRound = 0; mtErrors = 0; mtTotal = 0;
+  mtLoadRound();
+}
+
+function mtLoadRound() {
+  mtRound++;
+  var start = (mtRound - 1) * 6;
+  mtRoundWords = gWords.slice(start, start + 6);
+  if (!mtRoundWords.length) {
+    el('game-body').innerHTML =
+      '<div class="scores">' + scoreBox(mtTotal,'Parejas','var(--green)') + scoreBox(mtErrors,'Errores','var(--red)') + scoreBox(mtRound-1,'Rondas') + '</div>' +
+      showResults(mtTotal, mtTotal + mtErrors, 'matching');
+    return;
+  }
+  mtTotal += mtRoundWords.length;
+  mtSel = null;
+  var cn = mtRoundWords.map(function(w){return {id:w.id,type:'cn',text:w.c};});
+  var py = shuffle(mtRoundWords.map(function(w){return {id:w.id,type:'py',text:w.p};}));
+  var es = shuffle(mtRoundWords.map(function(w){
+    var em = E(w.c); return {id:w.id,type:'es',text:(em?em+' ':'')+w.m};
+  }));
+  var all = shuffle(cn.concat(py).concat(es));
+  var h = '<div class="scores">' + scoreBox(mtTotal,'Parejas','var(--green)') + scoreBox(mtErrors,'Errores','var(--red)') + scoreBox(mtRound,'Ronda') + '</div>' +
+    '<div class="match-cols" id="match-cols">' +
+    all.map(function(item) {
+      var cls = 'match-item' + (item.type==='cn'?' cn':item.type==='py'?' py':'');
+      return '<div class="' + cls + '" data-id="' + item.id + '" data-type="' + item.type + '" onclick="mtClick(this)">' + item.text + '</div>';
+    }).join('') +
+  '</div>';
+  el('game-body').innerHTML = h;
+}
+function mtClick(div) {
+  if (div.classList.contains('done')) return;
+  if (!mtSel) { div.classList.add('sel'); mtSel = div; return; }
+  if (mtSel === div) { div.classList.remove('sel'); mtSel = null; return; }
+  if (mtSel.dataset.id === div.dataset.id && mtSel.dataset.type !== div.dataset.type) {
+    mtSel.classList.remove('sel'); mtSel.classList.add('done');
+    div.classList.add('done'); mtSel = null;
+    var done = document.querySelectorAll('.match-item.done').length;
+    if (done === mtRoundWords.length * 3) setTimeout(mtLoadRound, 500);
+  } else {
+    mtErrors++;
+    div.classList.add('bad'); mtSel.classList.add('bad');
+    var s = mtSel, d = div;
+    setTimeout(function(){ s.classList.remove('sel','bad'); d.classList.remove('bad'); }, 500);
+    mtSel = null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// MEMORY
+// ═══════════════════════════════════════════════════════
+function initMemory(words) {
+  var sel = shuffle(words).slice(0, 8);
+  memPairs = sel.length; memMatched = 0; memFlips = 0; memFlipped = []; memLocked = false;
+  var cards = shuffle(
+    sel.map(function(w){return {id:w.id,text:w.c,type:'cn'};}).concat(
+    sel.map(function(w){return {id:w.id,text:w.m,type:'es'};}))
+  );
+  var cols = Math.min(4, Math.ceil(Math.sqrt(cards.length)));
+  var h = '<div class="scores">' + scoreBox(memMatched,'Parejas','var(--green)') + scoreBox(memFlips,'Intentos') + '</div>' +
+    '<div class="mem-grid" style="grid-template-columns:repeat(' + cols + ',1fr)" id="mem-grid">' +
+    cards.map(function(card,i) {
+      return '<div class="mem-card" data-i="' + i + '" data-id="' + card.id + '" data-type="' + card.type + '" onclick="memClick(this)">' +
+        '<div class="mem-inner">' +
+          '<div class="mem-face mem-b"><div class="mem-b-icon">汉</div></div>' +
+          '<div class="mem-face mem-f ' + (card.type==='es'?'es':'') + '">' + card.text + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+  el('game-body').innerHTML = h;
+}
+
+function memClick(div) {
+  if (memLocked || div.classList.contains('flip') || div.classList.contains('done')) return;
+  div.classList.add('flip');
+  memFlipped.push(div);
+  if (memFlipped.length === 2) {
+    memFlips++;
+    el('game-body').querySelector('.scores').innerHTML =
+      scoreBox(memMatched,'Parejas','var(--green)') + scoreBox(memFlips,'Intentos');
+    memLocked = true;
+    var a = memFlipped[0], b = memFlipped[1];
+    if (a.dataset.id === b.dataset.id && a.dataset.type !== b.dataset.type) {
+      a.classList.add('done'); b.classList.add('done');
+      memMatched++;
+      el('game-body').querySelector('.scores').innerHTML =
+        scoreBox(memMatched,'Parejas','var(--green)') + scoreBox(memFlips,'Intentos');
+      memFlipped = []; memLocked = false;
+      if (memMatched === memPairs) {
+        setTimeout(function(){
+          el('game-body').insertAdjacentHTML('beforeend', showResults(memPairs, memPairs, 'memory'));
+        }, 400);
+      }
+    } else {
+      setTimeout(function(){
+        a.classList.remove('flip'); b.classList.remove('flip');
+        memFlipped = []; memLocked = false;
+      }, 900);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// WRITING
+// ═══════════════════════════════════════════════════════
+function initWriting(words) {
+  gWords = shuffle(words); gIdx = 0; gOk = 0; gBad = 0;
+  wrMode = 'char';
+  renderWriting();
+}
+
+function setWrMode(m) {
+  wrMode = m;
+  document.querySelectorAll('.mode-chips .pill').forEach(function(b){b.classList.remove('on');});
+  var btn = document.getElementById('wr-m-' + m);
+  if (btn) btn.classList.add('on');
+  if (gIdx > 0) gIdx--;
+  renderWriting();
+}
+
+function renderWriting() {
+  var total = Math.min(gWords.length, 20);
+  if (gIdx >= total) {
+    el('game-body').innerHTML = showResults(gOk, total, 'writing');
+    return;
+  }
+  var w = gWords[gIdx];
+  wrCurMode = wrMode === 'both' ? (Math.random()>.5?'char':'pinyin') : wrMode;
+  var pct = Math.round(gIdx/total*100);
+  var em = E(w.c) || '';
+
+  var qlabel, mainHtml, pyHtml, inpPh, correct;
+  if (wrCurMode === 'char') {
+    qlabel = '¿Cómo se escribe este carácter?';
+    mainHtml = '<span style="font-size:26px;font-weight:800">' + em + ' ' + w.m + '</span>';
+    pyHtml = w.p;
+    inpPh = '写汉字…';
+    correct = w.c;
+  } else {
+    qlabel = '¿Cómo se pronuncia?';
+    mainHtml = '<span class="cn" style="font-size:52px;font-weight:700">' + em + ' ' + w.c + '</span>';
+    pyHtml = w.m;
+    inpPh = 'Escribe el pinyin…';
+    correct = normPy(w.p);
+  }
+
+  var h = '<div class="mode-chips">' +
+    ['char','pinyin','both'].map(function(m){
+      var labels = {char:'汉字 Carácter',pinyin:'Pinyin',both:'Mixto'};
+      return '<button class="pill' + (m===wrMode?' on':'') + '" id="wr-m-' + m + '" onclick="setWrMode(\'' + m + '\')">' + labels[m] + '</button>';
+    }).join('') +
+  '</div>' +
+  '<div class="scores">' + scoreBox(gOk,'Correctas','var(--green)') + scoreBox(gBad,'Errores','var(--red)') + scoreBox(gIdx+1,'Pregunta') + '</div>' +
+  '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+  '<div class="wr-qbox">' +
+    '<div class="wr-qlabel">' + qlabel + '</div>' +
+    '<div class="wr-main">' + mainHtml + '</div>' +
+    '<div class="wr-py">' + pyHtml + '</div>' +
+  '</div>' +
+  '<div class="wr-inputrow">' +
+    '<input class="wr-inp" id="wr-inp" placeholder="' + inpPh + '" data-correct="' + correct.replace(/"/g,'&quot;') + '" data-mode="' + wrCurMode + '" onkeydown="if(event.key===\'Enter\')checkWr()">' +
+    '<button class="btn btn-primary" onclick="checkWr()">✓</button>' +
+  '</div>' +
+  '<div style="text-align:center;margin-bottom:10px">' +
+    '<button class="btn btn-outline btn-sm" onclick="togglePista()">💡 Ver pista</button>' +
+  '</div>' +
+  '<div class="pista-box" id="pista-box">' +
+    '<div class="pista-py" style="font-size:22px;opacity:.6">' + w.p + '</div>' +
+  '</div>' +
+  '<div class="wr-feedback" id="wr-fb"></div>' +
+  '<button class="next-btn" id="wr-next" onclick="wrNext()">Siguiente →</button>';
+
+  el('game-body').innerHTML = h;
+  el('wr-inp').focus();
+}
+
+function togglePista() {
+  var p = el('pista-box');
+  p.style.display = p.style.display === 'block' ? 'none' : 'block';
+}
+
+function checkWr() {
+  var inp = el('wr-inp'), fb = el('wr-fb');
+  if (!inp || !inp.value.trim()) return;
+  var mode = inp.dataset.mode, correct = inp.dataset.correct;
+  var user = mode === 'char' ? inp.value.trim() : normPy(inp.value.trim());
+  var w = gWords[gIdx];
+  var ok = user === correct;
+  inp.classList.add(ok ? 'ok' : 'no');
+  fb.className = 'wr-feedback show ' + (ok ? 'wr-fb-ok' : 'wr-fb-no');
+  var em = E(w.c) || '';
+  fb.innerHTML = (ok ? '✅ ¡Correcto! ' : '❌ Respuesta: ') +
+    em + ' <span class="cn" style="font-size:18px">' + w.c + '</span> ' +
+    '<span style="color:var(--orange);font-size:13px">' + w.p + '</span> · ' + w.m;
+  if (ok) gOk++; else gBad++;
+  gIdx++;
+  if (ok) { setTimeout(renderWriting, 1100); }
+  else { var nb = el('wr-next'); if(nb) nb.classList.add('show'); }
+}
+
+function wrNext() { renderWriting(); }
+
+// ═══════════════════════════════════════════════════════
+// GRAMMAR QUIZ
+// ═══════════════════════════════════════════════════════
+function initGrammar() {
+  grQs = shuffle(grammarQs); grIdx = 0; grOk = 0; grBad = 0;
+  renderGQ();
+}
+
+function renderGQ() {
+  if (grIdx >= grQs.length) {
+    el('game-body').innerHTML = showResults(grOk, grQs.length, 'grammar');
+    return;
+  }
+  var q = grQs[grIdx];
+  var pct = Math.round(grIdx/grQs.length*100);
+  var optsH = q.opts.map(function(opt) {
+    return '<button class="gr-opt" onclick="grAns(\'' + opt.replace(/'/g,"\\'") + '\',\'' + q.ok.replace(/'/g,"\\'") + '\',\'' + q.exp.replace(/'/g,"\\'") + '\')">' + opt + '</button>';
+  }).join('');
+  el('game-body').innerHTML =
+    '<div class="scores">' + scoreBox(grOk,'Correctas','var(--green)') + scoreBox(grBad,'Errores','var(--red)') + scoreBox(grIdx+1,'Pregunta') + '</div>' +
+    '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="gr-qbox">' +
+      '<div class="gr-sentence cn">' + q.s.replace('___','<span style="color:var(--orange);font-weight:800">___</span>') + '</div>' +
+      '<div class="gr-hint">' + q.hint + '</div>' +
+    '</div>' +
+    '<div class="gr-opts">' + optsH + '</div>' +
+    '<div class="gr-explain" id="gr-exp"></div>' +
+    '<button class="next-btn" id="gr-next" onclick="grNext()">Siguiente →</button>';
+}
+
+function grAns(sel, ok, exp) {
+  document.querySelectorAll('.gr-opt').forEach(function(b){b.onclick=null;});
+  var correct = sel === ok;
+  document.querySelectorAll('.gr-opt').forEach(function(b) {
+    if (b.textContent.trim() === ok) b.classList.add('ok');
+    else if (b.textContent.trim() === sel) b.classList.add('no');
+  });
+  var q2 = grQs[grIdx];
+  var expEl = el('gr-exp');
+  expEl.className = 'gr-explain show';
+  expEl.innerHTML = '💡 ' + exp +
+    (q2 && q2.tr ? '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:13px;color:var(--ink3)"><b>Traducción:</b> ' + q2.tr + '</div>' : '');
+  if (correct) grOk++; else grBad++;
+  grIdx++;
+  if (correct) { setTimeout(renderGQ, 1400); }
+  else { var nb = el('gr-next'); if(nb) nb.classList.add('show'); }
+}
+
+function grNext() { renderGQ(); }
+
+// ═══════════════════════════════════════════════════════
+// CLASSIFIERS
+// ═══════════════════════════════════════════════════════
+function initClassifier() {
+  clMode = 'quiz'; clIdx = 0; clOk = 0; clBad = 0;
+  clQs = shuffle(clQsList).slice(0, 20);
+  renderCLHeader();
+  renderCLQuiz();
+}
+
+function renderCLHeader() {
+  var modes = ['quiz','ref','build'];
+  var labels = ['Quiz','Referencia','Construye'];
+  el('g-sub').innerHTML = '<div class="mode-chips" style="margin-top:6px">' +
+    modes.map(function(m,i){
+      return '<button class="pill btn-sm' + (m===clMode?' on':'') + '" onclick="setCLMode(\'' + m + '\')">' + labels[i] + '</button>';
+    }).join('') +
+  '</div>';
+}
+
+function setCLMode(m) {
+  clMode = m;
+  renderCLHeader();
+  if (m === 'quiz') { clIdx = 0; clOk = 0; clBad = 0; clQs = shuffle(clQsList).slice(0,20); renderCLQuiz(); }
+  else if (m === 'ref') renderCLRef();
+  else renderCLBuild();
+}
+
+function renderCLQuiz() {
+  if (clIdx >= clQs.length) {
+    el('game-body').innerHTML = showResults(clOk, clQs.length, 'classifier');
+    return;
+  }
+  var q = clQs[clIdx];
+  var distractors = shuffle(classifiers.filter(function(c){return c.char!==q.ok;})).slice(0,3);
+  var opts = shuffle([q.cl].concat(distractors));
+  var pct = Math.round(clIdx/clQs.length*100);
+  var optsH = opts.map(function(cl) {
+    var safeChar = cl.char.replace(/'/g,"\\'");
+    return '<button class="cl-opt" onclick="clAns(\'' + safeChar + '\',\'' + q.ok.replace(/'/g,"\\'") + '\')">' +
+      '<div class="cl-opt-char cn">' + cl.char + '</div>' +
+      '<div class="cl-opt-py">' + cl.py + '</div>' +
+    '</button>';
+  }).join('');
+
+  el('game-body').innerHTML =
+    '<div class="scores">' + scoreBox(clOk,'Correctas','var(--green)') + scoreBox(clBad,'Errores','var(--red)') + scoreBox(clIdx+1,'Pregunta') + '</div>' +
+    '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="cl-qbox">' +
+      '<div class="cl-qlabel">¿Qué clasificador (量词) usa este sustantivo?</div>' +
+      '<div class="cl-sentence cn">' + q.s + '</div>' +
+      '<div class="cl-py">' + q.py + '</div>' +
+      '<div class="cl-es">' + q.es + '</div>' +
+    '</div>' +
+    '<div class="cl-opts">' + optsH + '</div>' +
+    '<div class="cl-explain" id="cl-exp"></div>' +
+    '<button class="next-btn" id="cl-next" onclick="clNext()">Siguiente →</button>';
+}
+
+function clAns(sel, ok) {
+  document.querySelectorAll('.cl-opt').forEach(function(b){b.onclick=null;});
+  var correct = sel === ok;
+  document.querySelectorAll('.cl-opt').forEach(function(b) {
+    var ch = b.querySelector('.cl-opt-char');
+    if (!ch) return;
+    if (ch.textContent === ok) b.classList.add('ok');
+    else if (ch.textContent === sel) b.classList.add('no');
+  });
+  var cl = classifiers.find(function(c){return c.char===ok;});
+  var exp = el('cl-exp');
+  exp.className = 'cl-explain show';
+  exp.innerHTML = '<b>' + ok + ' (' + (cl?cl.py:'') + '):</b> ' + (cl?cl.rule:'') +
+    '<br><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
+    (cl?cl.nouns.slice(0,4).map(function(n){
+      return '<span style="background:' + cl.bg + ';border:1.5px solid ' + cl.color + '40;border-radius:12px;padding:5px 10px;font-size:12px;display:inline-flex;align-items:center;gap:4px">' +
+        '<span style="font-size:18px">' + n.e + '</span>' +
+        '<span class="cn" style="font-size:14px;font-weight:600;color:' + cl.color + '">' + n.c + '</span>' +
+        '<span style="color:var(--ink3)">' + n.es + '</span></span>';
+    }).join(''):'') +
+  '</div>';
+  if (correct) clOk++; else clBad++;
+  clIdx++;
+  if (correct) setTimeout(renderCLQuiz, 900);
+  else { var nb = el('cl-next'); if(nb) nb.classList.add('show'); }
+}
+
+function clNext() { renderCLQuiz(); }
+
+function renderCLRef() {
+  el('game-body').innerHTML = classifiers.map(function(cl) {
+    return '<div class="clf-card">' +
+      '<div class="clf-header" style="border-left:4px solid ' + cl.color + '">' +
+        '<div class="clf-icon" style="background:' + cl.bg + ';color:' + cl.color + '">' + cl.char + '</div>' +
+        '<div>' +
+          '<div class="clf-char cn">' + cl.char + ' <span style="font-size:13px;color:var(--orange)">' + cl.py + '</span></div>' +
+          '<div class="clf-py">' + cl.desc + '</div>' +
+          '<div class="clf-rule">' + cl.rule + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="clf-nouns">' +
+        cl.nouns.map(function(n) {
+          return '<span class="clf-noun" style="background:' + cl.bg + ';border:1.5px solid ' + cl.color + '40">' +
+            '<span class="clf-noun-emoji">' + n.e + '</span>' +
+            '<span class="clf-noun-cn cn">' + n.c + '</span>' +
+            '<span class="clf-noun-es">' + n.es + '</span>' +
+          '</span>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderCLBuild() {
+  clbSents = shuffle(buildSents); clbIdx = 0; clbOk = 0; clbBad = 0;
+  clbShowSent();
+}
+
+function clbShowSent() {
+  if (clbIdx >= clbSents.length) {
+    el('game-body').innerHTML = showResults(clbOk, clbSents.length, 'classifier');
+    return;
+  }
+  clbSel = [];
+  var s = clbSents[clbIdx];
+  var shuffled = shuffle(s.pieces.slice());
+  el('game-body').innerHTML =
+    '<div class="scores">' + scoreBox(clbOk,'Correctas','var(--green)') + scoreBox(clbBad,'Errores','var(--red)') + '</div>' +
+    '<div class="build-box">' +
+      '<div class="build-target">' + s.es + '</div>' +
+      '<div class="drop-zone" id="clb-drop"><span class="drop-hint" id="clb-hint">Toca las piezas para añadirlas</span></div>' +
+      '<div class="piece-zone" id="clb-pieces">' +
+        shuffled.map(function(p,i) {
+          return '<div class="piece" data-i="' + i + '" data-p="' + p.replace(/"/g,'&quot;') + '" onclick="clbAdd(this)">' + p + '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;justify-content:center;margin-bottom:10px">' +
+      '<button class="btn btn-outline" onclick="clbReset()">↺ Reiniciar</button>' +
+      '<button class="btn btn-primary" onclick="clbCheck()">Comprobar ✓</button>' +
+    '</div>' +
+    '<div id="clb-fb" style="display:none;margin-bottom:10px"></div>' +
+    '<button class="next-btn" id="clb-next" onclick="clbNext()">Siguiente →</button>';
+}
+
+function clbAdd(div) {
+  if (div.classList.contains('used')) return;
+  div.classList.add('used');
+  var p = div.dataset.p;
+  clbSel.push({p:p, src:div});
+  clbRenderDrop();
+}
+
+function clbRenderDrop() {
+  var dz = el('clb-drop');
+  dz.classList.toggle('has-items', clbSel.length > 0);
+  if (!clbSel.length) { dz.innerHTML = '<span class="drop-hint">Toca las piezas para añadirlas</span>'; return; }
+  dz.innerHTML = clbSel.map(function(item,i) {
+    return '<div class="drop-piece" onclick="clbRemove(' + i + ')">' + item.p + '</div>';
+  }).join('');
+}
+
+function clbRemove(i) {
+  var item = clbSel.splice(i, 1)[0];
+  item.src.classList.remove('used');
+  clbRenderDrop();
+}
+
+function clbReset() {
+  clbSel = [];
+  document.querySelectorAll('.piece').forEach(function(d){d.classList.remove('used');});
+  clbRenderDrop();
+  el('clb-fb').style.display = 'none';
+  var nb = el('clb-next'); if(nb) nb.classList.remove('show');
+}
+
+function clbCheck() {
+  var s = clbSents[clbIdx];
+  var user = clbSel.map(function(x){return x.p;});
+  var ok = JSON.stringify(user) === JSON.stringify(s.ok);
+  var fb = el('clb-fb');
+  fb.style.display = '';
+  if (ok) {
+    clbOk++;
+    fb.innerHTML = '<div style="background:var(--green-light);border:1.5px solid var(--green);border-radius:var(--r-sm);padding:12px 16px;color:var(--green);font-weight:700">✅ ¡Correcto! <span style="font-size:12px;font-weight:500;color:var(--ink3)">' + s.hint + '</span></div>';
+  } else {
+    clbBad++;
+    fb.innerHTML = '<div style="background:var(--red-light);border:1.5px solid var(--red);border-radius:var(--r-sm);padding:12px 16px;color:var(--red);font-weight:700">❌ Correcto: <span class="cn" style="font-size:18px;color:var(--ink)">' + s.ok.join('') + '</span><div style="font-size:12px;color:var(--ink3);margin-top:4px">' + s.py + ' · ' + s.hint + '</div></div>';
+  }
+  clbIdx++;
+  var nb = el('clb-next'); if(nb) nb.classList.add('show');
+}
+
+function clbNext() { clbShowSent(); }
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  initHome();
+  renderGrammarRef();
+  showScreen('home');
+});
+</script>
+</body>
+</html>
